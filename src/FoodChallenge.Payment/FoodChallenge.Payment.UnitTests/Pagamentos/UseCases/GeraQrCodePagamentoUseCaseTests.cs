@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using FoodChallenge.Common.Interfaces;
 using FoodChallenge.Common.Validators;
 using FoodChallenge.Payment.Application.Pagamentos;
@@ -39,18 +39,13 @@ public class GeraQrCodePagamentoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarNull_QuandoPedidoNaoEncontrado()
     {
-        // Arrange
         var idPedido = _faker.Random.Guid();
         var validationMessages = new List<string> { string.Format(Textos.NaoEncontrado, nameof(Pedido)) };
 
         _pedidoGateway
             .Setup(p => p.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync((Pedido)null);
-
-        // Act
         var result = await _useCase.ExecutarAsync(idPedido, CancellationToken.None);
-
-        // Assert
         Assert.Null(result);
         Assert.True(_validationContext.HasValidations);
         Assert.Equal(validationMessages, _validationContext.ValidationMessages);
@@ -66,7 +61,6 @@ public class GeraQrCodePagamentoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveCadastrarPagamento_E_RecarregarPedido_QuandoSucesso()
     {
-        // Arrange
         var idPedido = _faker.Random.Guid();
         var pedidoInicial = new Pedido { Id = idPedido };
         var pagamentoGerado = new Pagamento { IdPedido = idPedido };
@@ -92,11 +86,7 @@ public class GeraQrCodePagamentoUseCaseTests : TestBase
             .SetupSequence(p => p.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(pedidoInicial)
             .ReturnsAsync(pedidoRecarregado);
-
-        // Act
         var result = await _useCase.ExecutarAsync(idPedido, CancellationToken.None);
-
-        // Assert
         Assert.Same(pedidoRecarregado, result);
 
         _pedidoGateway.Verify(p => p.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false), Times.Exactly(2));
@@ -109,7 +99,6 @@ public class GeraQrCodePagamentoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_EmCasoDeExcecao_DeveChamarCommit_ERethrow()
     {
-        // Arrange
         var idPedido = _faker.Random.Guid();
         var pedido = new Pedido { Id = idPedido };
 
@@ -127,7 +116,6 @@ public class GeraQrCodePagamentoUseCaseTests : TestBase
             .Setup(p => p.AdicionarPagamentoAsync(It.IsAny<Pagamento>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(esperado);
 
-        // Act + Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _useCase.ExecutarAsync(idPedido, CancellationToken.None));
         Assert.Same(esperado, ex);
 

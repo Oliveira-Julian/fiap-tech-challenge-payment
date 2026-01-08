@@ -1,4 +1,4 @@
-﻿using FoodChallenge.Common.Extensions;
+using FoodChallenge.Common.Extensions;
 using FoodChallenge.Payment.Application.Pagamentos.Specifications;
 using FoodChallenge.Payment.Domain.Enums;
 using FoodChallenge.Payment.Domain.Globalization;
@@ -19,13 +19,8 @@ public class PedidoPagamentoSpecificationTests : TestBase
     [InlineData(PedidoStatus.Recebido)]
     public async Task DeveSerValida_QuandoStatusPermitePagamento(PedidoStatus status)
     {
-        // Arrange
         var pedido = PedidoMock.CriarComStatus(status: status);
-
-        // Act
         var result = await _specification.ValidateModelAsync(pedido, CancellationToken.None);
-
-        // Assert
         Assert.True(result.Valid);
         Assert.Empty(result.Responses);
     }
@@ -37,18 +32,13 @@ public class PedidoPagamentoSpecificationTests : TestBase
     [InlineData(PedidoStatus.Finalizado)]
     public async Task DeveSerInvalida_QuandoStatusNaoPermitePagamento(PedidoStatus status)
     {
-        // Arrange
         var pedido = PedidoMock.CriarComStatus(status: status);
 
         var validationMessages = new List<string>
         {
             string.Format(Textos.PagamentoStatusNaoPermitido, status.GetDescription())
         };
-
-        // Act
         var result = await _specification.ValidateModelAsync(pedido, CancellationToken.None);
-
-        // Assert
         Assert.False(result.Valid);
         Assert.Equal(validationMessages, result.Responses.SelectMany(r => r.Mensagens));
     }

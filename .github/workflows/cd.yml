@@ -9,10 +9,88 @@ env:
   ECR_REPOSITORY: fiap-tech-challenge-payment # Nome do repositório ECR
   APP_RUNNER_SERVICE: payment-app-runner      # Nome do serviço App Runner
   DOCKERFILE_PATH: tools/docker/build/dotnet.web-api.Dockerfile
+  DOTNET_VERSION: '9.0.x'
+  PROJECT_PATH: 'src/FoodChallenge.Payment'
 
 jobs:
-  deploy:
+  test:
+    name: Testes e Análise
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java (para SonarScanner)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Instalar ferramentas .NET
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          dotnet tool install --global dotnet-coverage
+
+      - name: Restore dependências
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet restore
+
+      - name: SonarCloud - Begin Analysis
+        working-directory: ${{ env.PROJECT_PATH }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
+            /o:"${{ secrets.SONAR_ORG }}" \
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml"
+
+      - name: Build
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Executar Testes Unitários com Cobertura
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+          dotnet-coverage collect \
+            'dotnet test --no-build --configuration Release --verbosity normal' \
+            -f xml \
+            -o 'coverage.xml'
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ${{ env.PROJECT_PATH }}/coverage.xml
+          retention-days: 30
+
+      - name: SonarCloud - End Analysis
+        working-directory: ${{ env.PROJECT_PATH }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Exibir Resultados dos Testes
+        run: |
+          echo "✅ Testes executados com sucesso!"
+          echo "📊 Relatório de cobertura enviado para SonarCloud"
+          echo "🔗 Acesse: https://sonarcloud.io/project/overview?id=${{ secrets.SONAR_PROJECT_KEY }}"
+
+  deploy:
+    name: Deploy para AWS
+    runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - name: Checkout do código

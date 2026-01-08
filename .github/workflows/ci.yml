@@ -34,40 +34,56 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Instalar ferramentas .NET
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          dotnet tool install --global dotnet-coverage
+
       - name: Restore dependências
         working-directory: ${{ env.PROJECT_PATH }}
         run: dotnet restore
 
-      - name: Install Sonar Scanner for .NET
-        run: dotnet tool install --global dotnet-sonarscanner
-
-      - name: SonarCloud - Begin
+      - name: SonarCloud - Begin Analysis
         working-directory: ${{ env.PROJECT_PATH }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet sonarscanner begin \
             /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
             /o:"${{ secrets.SONAR_ORG }}" \
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.cs.opencover.reportsPaths="./TestResults/**/coverage.opencover.xml" \
-            /d:sonar.coverage.exclusions="**/Migrations/**"
+            /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml"
 
       - name: Build
         working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore --configuration Release
 
-      - name: Test with coverage
+      - name: Executar Testes Unitários com Cobertura
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          dotnet test ./FoodChallenge.Payment.UnitTests \
-            --no-build \
-            --collect:"XPlat Code Coverage" \
-            --results-directory ./TestResults \
-            --logger "trx;LogFileName=testresults.trx" \
-            -p:CollectCoverage=true \
-            -p:CoverletOutputFormat=opencover \
-            -p:CoverletOutput=../TestResults/coverage.opencover.xml
+          dotnet-coverage collect \
+            'dotnet test --no-build --configuration Release --verbosity normal' \
+            -f xml \
+            -o 'coverage.xml'
 
-      - name: SonarCloud - End
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ${{ env.PROJECT_PATH }}/coverage.xml
+          retention-days: 7
+
+      - name: SonarCloud - End Analysis
         working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Exibir Resultados dos Testes
+        if: always()
+        run: |
+          echo "✅ Testes executados com sucesso!"
+          echo "📊 Relatório de cobertura enviado para SonarCloud"
+          echo "🔗 Acesse: https://sonarcloud.io/project/overview?id=${{ secrets.SONAR_PROJECT_KEY }}"

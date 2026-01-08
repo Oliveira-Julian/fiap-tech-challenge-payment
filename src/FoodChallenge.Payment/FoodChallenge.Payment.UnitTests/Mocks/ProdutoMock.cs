@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using FoodChallenge.Payment.Domain.Produtos;
 
 namespace FoodChallenge.Payment.UnitTests.Mocks;
