@@ -1,0 +1,70 @@
+name: CI - Pull Request (.NET 9)
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  PROJECT_PATH: 'src/FoodChallenge.Payment'
+  SOLUTION_FILE: 'src/FoodChallenge.Payment/FoodChallenge.Payment.sln'
+
+jobs:
+  build-test-sonar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java (para SonarScanner)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependências
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet restore
+
+      - name: Build
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Testes com Coverage
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+          dotnet test \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage \
+            --no-restore --no-build \
+            --logger "console;verbosity=normal"
+
+      - name: Instalar SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: SonarCloud - Begin
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
+            /o:"${{ secrets.SONAR_ORG }}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml"
+
+      - name: Build para análise Sonar
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet build --configuration Release --no-restore
+
+      - name: SonarCloud - End
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
