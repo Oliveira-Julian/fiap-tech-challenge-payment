@@ -38,6 +38,7 @@ jobs:
         run: dotnet restore
 
       - name: SonarCloud - Begin Analysis
+        working-directory: ${{ env.PROJECT_PATH }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -46,11 +47,9 @@ jobs:
             /o:"${{ secrets.SONAR_ORG }}" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.sources="${{ github.workspace }}/${{ env.PROJECT_PATH }}" \
-            /d:sonar.tests="${{ github.workspace }}/${{ env.PROJECT_PATH }}/FoodChallenge.Payment.UnitTests" \
-            /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/${{ env.PROJECT_PATH }}/TestResults/*/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="./TestResults/*/coverage.opencover.xml" \
             /d:sonar.coverage.exclusions="**/Tests/**,**/*Tests*/**,**/Migrations/**" \
-            /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**,**/*Tests*/**"
+            /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**"
 
       - name: Build
         working-directory: ${{ env.PROJECT_PATH }}
@@ -68,9 +67,7 @@ jobs:
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
           echo "📁 Arquivos de cobertura gerados:"
-          find ${{ github.workspace }} -name "coverage.opencover.xml" -type f
-          echo "📊 Primeiras linhas do arquivo de cobertura:"
-          head -50 $(find . -name "coverage.opencover.xml" -type f | head -1) || echo "Arquivo não encontrado"
+          find . -name "coverage.opencover.xml" -type f
 
       - name: Upload Coverage Report
         if: always()
@@ -81,6 +78,7 @@ jobs:
           retention-days: 7
 
       - name: SonarCloud - End Analysis
+        working-directory: ${{ env.PROJECT_PATH }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
