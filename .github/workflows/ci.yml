@@ -1,4 +1,4 @@
-name: CI - Build and Test (.NET 9)
+name: CI - Pull Request (.NET 9)
 
 on:
   pull_request:
@@ -7,10 +7,10 @@ on:
 env:
   DOTNET_VERSION: '9.0.x'
   PROJECT_PATH: 'src/FoodChallenge.Payment'
+  SOLUTION_FILE: 'src/FoodChallenge.Payment/FoodChallenge.Payment.sln'
 
 jobs:
-  build:
-    name: Build and analyze
+  build-test-sonar:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,63 +30,41 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Instalar ferramentas .NET
-        run: dotnet tool install --global dotnet-sonarscanner
-
       - name: Restore dependências
         working-directory: ${{ env.PROJECT_PATH }}
         run: dotnet restore
-
-      - name: SonarCloud - Begin Analysis
-        working-directory: ${{ env.PROJECT_PATH }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          dotnet sonarscanner begin \
-            /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
-            /o:"${{ secrets.SONAR_ORG }}" \
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
-            /d:sonar.cs.vstest.reportsPaths="**/TestResults/**/*.trx" \
-            /d:sonar.coverage.exclusions="**/Tests/**,**/*Tests*/**,**/Migrations/**" \
-            /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**"
 
       - name: Build
         working-directory: ${{ env.PROJECT_PATH }}
         run: dotnet build --no-restore --configuration Release
 
-      - name: Executar Testes Unitários com Cobertura
+      - name: Testes com Coverage
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          dotnet test --no-build --configuration Release --verbosity normal \
-            --logger trx \
+          dotnet test \
+            --configuration Release \
             --collect:"XPlat Code Coverage" \
-            --results-directory ./TestResults \
-            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+            --results-directory ./coverage \
+            --no-restore --no-build \
+            --logger "console;verbosity=normal"
 
-      - name: Listar arquivos de cobertura
+      - name: Instalar SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: SonarCloud - Begin
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          echo "📁 Arquivos de cobertura gerados:"
-          find . -name "coverage.opencover.xml" -type f
+          dotnet sonarscanner begin \
+            /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
+            /o:"${{ secrets.SONAR_ORG }}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml"
 
-      - name: Upload Coverage Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: ${{ env.PROJECT_PATH }}/TestResults/**/coverage.opencover.xml
-          retention-days: 7
-
-      - name: SonarCloud - End Analysis
+      - name: Build para análise Sonar
         working-directory: ${{ env.PROJECT_PATH }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        run: dotnet build --configuration Release --no-restore
 
-      - name: Exibir Resultados dos Testes
-        run: |
-          echo "✅ Testes executados com sucesso!"
-          echo "📊 Relatório de cobertura enviado para SonarCloud"
-          echo "🔗 Acesse: https://sonarcloud.io/project/overview?id=${{ secrets.SONAR_PROJECT_KEY }}"
+      - name: SonarCloud - End
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
