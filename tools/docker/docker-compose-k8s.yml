@@ -1,0 +1,23 @@
+services:
+  foodchallenge_payment_api:
+    image: julianoliveira/foodchallenge-payment-api
+    container_name: foodchallenge_payment_api
+    build:
+      context: ../../src/FoodChallenge.payment
+      dockerfile: ../../tools/docker/build/dotnet.web-api.Dockerfile
+      target: final
+    environment:
+      ConnectionStrings__DbConnection: ${ConnectionStrings__DbConnection}
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+    networks:
+      - foodchallenge_network
+    ports:
+      - "5002:5002"
+
+volumes:
+  foodchallenge_data:
+    driver: local
+
+networks:
+  foodchallenge_network:
+    driver: bridge
