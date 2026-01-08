@@ -1,8 +1,11 @@
 name: CI - Pull Request (.NET 9)
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    types: [opened, synchronize, reopened]
 
 env:
   DOTNET_VERSION: '9.0.x'
@@ -35,21 +38,7 @@ jobs:
         working-directory: ${{ env.PROJECT_PATH }}
         run: dotnet restore
 
-      - name: Build
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Testes com Coverage
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: |
-          dotnet test \
-            --configuration Release \
-            --collect:"XPlat Code Coverage" \
-            --results-directory ./coverage \
-            --no-restore --no-build \
-            --logger "console;verbosity=normal"
-
-      - name: Instalar SonarScanner
+      - name: Install Sonar Scanner for .NET
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: SonarCloud - Begin
@@ -63,9 +52,9 @@ jobs:
             /d:sonar.cs.opencover.reportsPaths="./TestResults/**/coverage.opencover.xml" \
             /d:sonar.coverage.exclusions="**/Migrations/**"
 
-      - name: SonarCloud - Build
+      - name: Build
         working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --no-restore
 
       - name: Test with coverage
         working-directory: ${{ env.PROJECT_PATH }}
