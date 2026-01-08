@@ -10,32 +10,39 @@ env:
   SOLUTION_FILE: 'src/FoodChallenge.Payment/FoodChallenge.Payment.sln'
 
 jobs:
-  build-test:
+  build-and-analyze:
+    name: Build and analyze
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: '9.0.x'
 
-      - name: Restore dependências
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet restore
+      - name: Install Sonar Scanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: Build
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Testes
-        working-directory: ${{ env.PROJECT_PATH }}
+      - name: SonarCloud Begin
         run: |
-          dotnet test \
-            --configuration Release \
-            --no-restore --no-build \
-            --logger "console;verbosity=normal"
+          dotnet sonarscanner begin \
+            /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
+            /o:"${{ secrets.SONAR_ORG }}" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.coverage.exclusions="**/Migrations/**"
+        working-directory: ./src/FoodChallenge.Payment
+
+      - name: Build and Test
+        run: |
+          dotnet build
+          dotnet test --collect:"XPlat Code Coverage" --results-directory ./TestResults
+        working-directory: ./src/FoodChallenge.Payment
+
+      - name: Run SonarQube Analysis
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        working-directory: ./src/FoodChallenge.Payment
