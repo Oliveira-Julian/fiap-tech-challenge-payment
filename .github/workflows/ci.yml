@@ -1,19 +1,15 @@
-name: CI - Pull Request (.NET 9)
+name: CI - Build and Test (.NET 9)
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ "main" ]
 
 env:
   DOTNET_VERSION: '9.0.x'
   PROJECT_PATH: 'src/FoodChallenge.Payment'
-  SOLUTION_FILE: 'src/FoodChallenge.Payment/FoodChallenge.Payment.sln'
 
 jobs:
-  build-test-sonar:
+  build:
     name: Build and analyze
     runs-on: ubuntu-latest
 
@@ -35,8 +31,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Instalar ferramentas .NET
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
+        run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Restore dependências
         working-directory: ${{ env.PROJECT_PATH }}
@@ -52,8 +47,8 @@ jobs:
             /o:"${{ secrets.SONAR_ORG }}" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-            /d:sonar.coverage.exclusions="**/*Tests/**,**/*.UnitTests/**,**/Migrations/**" \
+            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.coverage.exclusions="**/Tests/**,**/*.Tests/**,**/*.UnitTests/**,**/Migrations/**,**/obj/**" \
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**"
 
       - name: Build
@@ -65,20 +60,23 @@ jobs:
         run: |
           dotnet test --no-build --configuration Release --verbosity normal \
             --collect:"XPlat Code Coverage" \
-            --results-directory:"./TestResults" \
+            --results-directory ./TestResults \
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-          
-          # Move coverage file to expected location
-          find ./TestResults -name "coverage.opencover.xml" -exec cp {} ./coverage.opencover.xml \; 2>/dev/null || true
+
+      - name: Listar arquivos de cobertura
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+          echo "📁 Arquivos de cobertura gerados:"
+          find . -name "*.xml" -path "*/TestResults/*" -type f
+          echo "📊 Conteúdo do TestResults:"
+          ls -laR ./TestResults || echo "Diretório TestResults não encontrado"
 
       - name: Upload Coverage Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: |
-            ${{ env.PROJECT_PATH }}/coverage.opencover.xml
-            ${{ env.PROJECT_PATH }}/TestResults/**/coverage.opencover.xml
+          path: ${{ env.PROJECT_PATH }}/TestResults/**/coverage.opencover.xml
           retention-days: 7
 
       - name: SonarCloud - End Analysis
@@ -88,7 +86,6 @@ jobs:
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Exibir Resultados dos Testes
-        if: always()
         run: |
           echo "✅ Testes executados com sucesso!"
           echo "📊 Relatório de cobertura enviado para SonarCloud"

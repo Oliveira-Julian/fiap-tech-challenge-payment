@@ -5,9 +5,9 @@ on:
     branches: [ "main" ]
 
 env:
-  AWS_REGION: us-east-1                        # Alterar para sua região
-  ECR_REPOSITORY: fiap-tech-challenge-payment # Nome do repositório ECR
-  APP_RUNNER_SERVICE: payment-app-runner      # Nome do serviço App Runner
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: fiap-tech-challenge-payment
+  APP_RUNNER_SERVICE: payment-app-runner
   DOCKERFILE_PATH: tools/docker/build/dotnet.web-api.Dockerfile
   DOTNET_VERSION: '9.0.x'
   PROJECT_PATH: 'src/FoodChallenge.Payment'
@@ -35,8 +35,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Instalar ferramentas .NET
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
+        run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Restore dependências
         working-directory: ${{ env.PROJECT_PATH }}
@@ -52,8 +51,8 @@ jobs:
             /o:"${{ secrets.SONAR_ORG }}" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-            /d:sonar.coverage.exclusions="**/*Tests/**,**/*.UnitTests/**,**/Migrations/**" \
+            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.coverage.exclusions="**/Tests/**,**/*.Tests/**,**/*.UnitTests/**,**/Migrations/**,**/obj/**" \
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**"
 
       - name: Build
@@ -65,20 +64,21 @@ jobs:
         run: |
           dotnet test --no-build --configuration Release --verbosity normal \
             --collect:"XPlat Code Coverage" \
-            --results-directory:"./TestResults" \
+            --results-directory ./TestResults \
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-          
-          # Move coverage file to expected location
-          find ./TestResults -name "coverage.opencover.xml" -exec cp {} ./coverage.opencover.xml \; 2>/dev/null || true
+
+      - name: Listar arquivos de cobertura
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+          echo "📁 Arquivos de cobertura gerados:"
+          find . -name "*.xml" -path "*/TestResults/*" -type f
 
       - name: Upload Coverage Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: |
-            ${{ env.PROJECT_PATH }}/coverage.opencover.xml
-            ${{ env.PROJECT_PATH }}/TestResults/**/coverage.opencover.xml
+          path: ${{ env.PROJECT_PATH }}/TestResults/**/coverage.opencover.xml
           retention-days: 30
 
       - name: SonarCloud - End Analysis
@@ -91,7 +91,6 @@ jobs:
         run: |
           echo "✅ Testes executados com sucesso!"
           echo "📊 Relatório de cobertura enviado para SonarCloud"
-          echo "🔗 Acesse: https://sonarcloud.io/project/overview?id=${{ secrets.SONAR_PROJECT_KEY }}"
 
   deploy:
     name: Deploy para AWS
@@ -137,5 +136,3 @@ jobs:
             --region ${{ env.AWS_REGION }}
           
           echo "✅ Deploy iniciado no App Runner"
-          echo "🔗 Service: ${{ env.APP_RUNNER_SERVICE }}"
-          echo "📦 Image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
