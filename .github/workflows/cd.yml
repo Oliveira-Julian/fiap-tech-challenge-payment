@@ -5,13 +5,16 @@ on:
     branches: [ "main" ]
 
 env:
-  AWS_REGION: us-east-1                        # Alterar para sua região
-  ECR_REPOSITORY: fiap-tech-challenge-payment # Nome do repositório ECR
-  APP_RUNNER_SERVICE: payment-app-runner      # Nome do serviço App Runner
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: fiap-tech-challenge-payment
+  APP_RUNNER_SERVICE: payment-app-runner
   DOCKERFILE_PATH: tools/docker/build/dotnet.web-api.Dockerfile
+  DOTNET_VERSION: '9.0.x'
+  PROJECT_PATH: 'src/FoodChallenge.Payment'
 
 jobs:
   deploy:
+    name: Deploy para AWS
     runs-on: ubuntu-latest
 
     steps:
@@ -53,5 +56,3 @@ jobs:
             --region ${{ env.AWS_REGION }}
           
           echo "✅ Deploy iniciado no App Runner"
-          echo "🔗 Service: ${{ env.APP_RUNNER_SERVICE }}"
-          echo "📦 Image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"

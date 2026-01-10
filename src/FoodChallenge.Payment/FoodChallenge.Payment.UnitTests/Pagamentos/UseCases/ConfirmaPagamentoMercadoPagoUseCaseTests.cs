@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using FoodChallenge.Common.Extensions;
 using FoodChallenge.Common.Interfaces;
 using FoodChallenge.Common.Validators;
@@ -47,13 +47,8 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarValidacao_QuandoWebhookInvalido()
     {
-        // Arrange
         var notificacao = new NotificacaoMercadoPago { Tipo = "invalid" };
-
-        // Act
         var result = await _useCase.ExecutarAsync(notificacao, CancellationToken.None);
-
-        // Assert
         Assert.Null(result);
         Assert.Contains(Textos.WebhookAcaoOuTipoNaoPermitido, _validationContext.ValidationMessages);
     }
@@ -61,7 +56,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarValidacao_QuandoPagamentoNaoEncontrado()
     {
-        // Arrange
         var notificacao = new NotificacaoMercadoPago { Tipo = "payment", Acao = "payment.created" };
         var validationMessages = new List<string>
         {
@@ -71,11 +65,7 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         _pagamentoGateway
             .Setup(p => p.ObterPagamentoIdMercadoPagoAsync(notificacao.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Pagamento)null);
-
-        // Act
         var result = await _useCase.ExecutarAsync(notificacao, CancellationToken.None);
-
-        // Assert
         Assert.Null(result);
         Assert.True(_validationContext.HasValidations);
         Assert.Equal(validationMessages, _validationContext.ValidationMessages);
@@ -86,7 +76,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarValidacao_QuandoPedidoNaoEncontrado()
     {
-        // Arrange
         var validationMessages = new List<string>
         {
             string.Format(Textos.NaoEncontrado, nameof(Pedido))
@@ -110,11 +99,7 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         _pedidoGateway
             .Setup(p => p.ObterPedidoComRelacionamentosAsync(pagamento.IdPedido.Value, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync((Pedido)null);
-
-        // Act
         var result = await _useCase.ExecutarAsync(notificacao, CancellationToken.None);
-
-        // Assert
         Assert.Null(result);
         Assert.True(_validationContext.HasValidations);
         Assert.Equal(validationMessages, _validationContext.ValidationMessages);
@@ -127,7 +112,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveAtualizarSomentePagamento_QuandoNaoAprovado()
     {
-        // Arrange
         _unitOfWork.Setup(u => u.BeginTransaction());
         _unitOfWork.Setup(u => u.CommitAsync()).Returns(Task.CompletedTask);
 
@@ -154,11 +138,7 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         _pedidoGateway
             .Setup(p => p.ObterPedidoComRelacionamentosAsync(pagamento.IdPedido.Value, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(pedido);
-
-        // Act
         var result = await _useCase.ExecutarAsync(notificacao, CancellationToken.None);
-
-        // Assert
         Assert.Equal(pedido, result);
         Assert.Equal(PagamentoStatus.Recusado, result.Pagamento.Status);
         _pagamentoGateway.Verify(p => p.AtualizarPagamento(pagamento), Times.Once);
@@ -170,7 +150,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveAtualizarPedidoEOrdem_QuandoPagamentoAprovado()
     {
-        // Arrange
         _unitOfWork.Setup(u => u.BeginTransaction());
         _unitOfWork.Setup(u => u.CommitAsync()).Returns(Task.CompletedTask);
 
@@ -197,11 +176,7 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         _pedidoGateway
             .Setup(p => p.ObterPedidoComRelacionamentosAsync(pagamento.IdPedido.Value, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(pedido);
-
-        // Act
         var result = await _useCase.ExecutarAsync(notificacao, CancellationToken.None);
-
-        // Assert
         Assert.Equal(pedido, result);
         Assert.Equal(PagamentoStatus.Aprovado, result.Pagamento.Status);
         _pagamentoGateway.Verify(p => p.AtualizarPagamento(pagamento), Times.Once);
@@ -212,7 +187,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarNull_QuandoPedidoNaoPodeSerPago()
     {
-        // Arrange
         _unitOfWork.Setup(u => u.BeginTransaction());
         _unitOfWork.Setup(u => u.CommitAsync()).Returns(Task.CompletedTask);
 
@@ -244,11 +218,7 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         _pedidoGateway
             .Setup(p => p.ObterPedidoComRelacionamentosAsync(pagamento.IdPedido.Value, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(pedido);
-
-        // Act
         var result = await _useCase.ExecutarAsync(notificacao, CancellationToken.None);
-
-        // Assert
         Assert.Null(result);
         Assert.True(_validationContext.HasValidations);
         Assert.Equal(validationMessages, _validationContext.ValidationMessages);
@@ -262,7 +232,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarValidacao_QuandoPagamentoMercadoPagoNaoEncontrado()
     {
-        // Arrange
         var notificacao = new NotificacaoMercadoPago { Tipo = "payment", Acao = "payment.created" };
         var mensagens = new List<string> { string.Format(Textos.NaoEncontrado, nameof(Pedido)) };
 
@@ -279,11 +248,7 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         _pagamentoGateway
             .Setup(p => p.ObterPedidoMercadoPagoAsync(pagamento.IdMercadoPagoOrdem, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Pagamento)null);
-
-        // Act
         var result = await _useCase.ExecutarAsync(notificacao, CancellationToken.None);
-
-        // Assert
         Assert.Null(result);
         Assert.True(_validationContext.HasValidations);
         Assert.Equal(mensagens, _validationContext.ValidationMessages);
@@ -300,7 +265,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarValidacao_QuandoPagamentoMercadoPagoSemIdPagamento()
     {
-        // Arrange
         var notificacao = new NotificacaoMercadoPago { Tipo = "payment", Acao = "payment.created" };
         var mensagens = new List<string> { string.Format(Textos.NaoEncontrado, nameof(Pedido)) };
 
@@ -317,11 +281,7 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         _pagamentoGateway
             .Setup(p => p.ObterPedidoMercadoPagoAsync(pagamento.IdMercadoPagoOrdem, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Pagamento { IdMercadoPagoPagamento = string.Empty });
-
-        // Act
         var result = await _useCase.ExecutarAsync(notificacao, CancellationToken.None);
-
-        // Assert
         Assert.Null(result);
         Assert.True(_validationContext.HasValidations);
         Assert.Equal(mensagens, _validationContext.ValidationMessages);
@@ -338,7 +298,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_EmCasoDeExcecao_DeveFazerRollback_ERethrow()
     {
-        // Arrange
         _unitOfWork.Setup(u => u.BeginTransaction());
         _unitOfWork.Setup(u => u.RollbackAsync()).Returns(Task.CompletedTask);
 
@@ -348,7 +307,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
             .Setup(p => p.ObterPagamentoIdMercadoPagoAsync(notificacao.Id, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Erro inesperado"));
 
-        // Act + Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _useCase.ExecutarAsync(notificacao, CancellationToken.None));
 
         _unitOfWork.Verify(u => u.RollbackAsync(), Times.Once);

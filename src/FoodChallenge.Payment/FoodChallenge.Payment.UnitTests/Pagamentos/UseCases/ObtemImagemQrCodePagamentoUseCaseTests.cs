@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using FoodChallenge.Common.Validators;
 using FoodChallenge.Payment.Application.Pagamentos.UseCases;
 using FoodChallenge.Payment.Application.Pedidos;
@@ -31,18 +31,13 @@ public class ObtemImagemQrCodePagamentoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarNull_QuandoPedidoNaoEncontrado()
     {
-        // Arrange
         var idPedido = _faker.Random.Guid();
         var mensagens = new List<string> { string.Format(Textos.NaoEncontrado, nameof(Pedido)) };
 
         _pedidoGateway
             .Setup(g => g.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync((Pedido)null);
-
-        // Act
         var bytes = await _useCase.ExecutarAsync(idPedido, CancellationToken.None);
-
-        // Assert
         Assert.Null(bytes);
         Assert.True(_validationContext.HasValidations);
         Assert.Equal(mensagens, _validationContext.ValidationMessages);
@@ -53,7 +48,6 @@ public class ObtemImagemQrCodePagamentoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarNull_QuandoPedidoSemPagamento()
     {
-        // Arrange
         var idPedido = _faker.Random.Guid();
         var pedido = new Pedido { Id = idPedido };
         var mensagens = new List<string> { string.Format(Textos.QrCodeNaoFoiGerado, pedido.Id) };
@@ -61,11 +55,7 @@ public class ObtemImagemQrCodePagamentoUseCaseTests : TestBase
         _pedidoGateway
             .Setup(g => g.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(pedido);
-
-        // Act
         var bytes = await _useCase.ExecutarAsync(idPedido, CancellationToken.None);
-
-        // Assert
         Assert.Null(bytes);
         Assert.True(_validationContext.HasValidations);
         Assert.Equal(mensagens, _validationContext.ValidationMessages);
@@ -76,7 +66,6 @@ public class ObtemImagemQrCodePagamentoUseCaseTests : TestBase
     [Fact]
     public async Task ExecutarAsync_DeveRetornarImagem_QuandoPagamentoExiste()
     {
-        // Arrange
         var idPedido = _faker.Random.Guid();
         var pedido = new Pedido
         {
@@ -91,11 +80,7 @@ public class ObtemImagemQrCodePagamentoUseCaseTests : TestBase
         _pedidoGateway
             .Setup(g => g.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(pedido);
-
-        // Act
         var bytes = await _useCase.ExecutarAsync(idPedido, CancellationToken.None);
-
-        // Assert
         Assert.NotNull(bytes);
         Assert.NotEmpty(bytes);
         Assert.False(_validationContext.HasValidations);
