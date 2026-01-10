@@ -63,7 +63,8 @@ jobs:
             /o:"${{ secrets.SONAR_ORG }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.cs.opencover.reportsPaths="$(pwd)/TestResults/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.opencover.xml" \
+            /d:sonar.tests="FoodChallenge.Payment.UnitTests" \
             /d:sonar.coverage.exclusions="**/Migrations/**"
 
       - name: Build solution
@@ -75,15 +76,20 @@ jobs:
         run: |
           dotnet test ./FoodChallenge.Payment.UnitTests \
             --no-build \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults \
+            --logger "trx;LogFileName=testresults.trx" \
             -p:CollectCoverage=true \
             -p:CoverletOutputFormat=opencover \
-            -p:CoverletOutput=../TestResults/coverage.opencover.xml
+            -p:CoverletOutput=TestResults/coverage.opencover.xml
 
-      - name: Show coverage file
+      - name: Show coverage file (diagnose)
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
           echo "Listing TestResults directory:"
           ls -la TestResults || true
+          echo "First lines of coverage report:"
+          sed -n '1,50p' TestResults/coverage.opencover.xml || true
 
       - name: SonarCloud - End
         working-directory: ${{ env.PROJECT_PATH }}
