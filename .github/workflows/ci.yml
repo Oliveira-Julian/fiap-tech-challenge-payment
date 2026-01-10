@@ -1,6 +1,9 @@
 name: CI - Build, Test & SonarQube
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -10,11 +13,6 @@ jobs:
   build-test-sonar:
     name: Build, Test & Analyze
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./src
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,13 +22,7 @@ jobs:
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
-
-      - name: Setup Java (required for SonarScanner)
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+          dotnet-version: '9.0.x'
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
@@ -47,14 +39,14 @@ jobs:
           restore-keys: ${{ runner.os }}-nuget-
 
       - name: Install SonarScanner
-        working-directory: .
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Restore dependencies
+        working-directory: ./src/FoodChallenge.Payment
         run: dotnet restore
 
       - name: Begin SonarCloud analysis
-        working-directory: .
+        working-directory: ./src/FoodChallenge.Payment
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -63,21 +55,27 @@ jobs:
             /o:"${{ vars.SONAR_ORGANIZATION }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="./TestResults/**/coverage.opencover.xml" \
             /d:sonar.coverage.exclusions="**/*Tests*/**,**/Program.cs,**/Migrations/**"
 
       - name: Build solution
+        working-directory: ./src/FoodChallenge.Payment
         run: dotnet build --no-restore --configuration Release
 
       - name: Run tests with coverage
+        working-directory: ./src/FoodChallenge.Payment
         run: |
-          dotnet test --no-build --configuration Release \
+          dotnet test ./FoodChallenge.UnitTests \
+            --no-build \
             --collect:"XPlat Code Coverage" \
             --results-directory ./TestResults \
-            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+            --logger "trx;LogFileName=testresults.trx" \
+            -p:CollectCoverage=true \
+            -p:CoverletOutputFormat=opencover \
+            -p:CoverletOutput=../TestResults/coverage.opencover.xml
 
       - name: End SonarCloud analysis
-        working-directory: .
+        working-directory: ./src/FoodChallenge.Payment
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
