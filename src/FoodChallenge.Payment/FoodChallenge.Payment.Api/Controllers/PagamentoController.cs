@@ -1,5 +1,6 @@
 using FoodChallenge.Payment.Adapter.Controllers;
 using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
+using FoodChallenge.Payment.Application.Pagamentos.Models.Responses;
 using FoodChallenge.Payment.Domain.Constants;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,8 +38,9 @@ public class PagamentoController(
     /// </summary>
     /// <param name="request">Dados do pagamento.</param>
     /// <param name="cancellationToken">Token de cancelamento</param>
+    /// <returns>Retorna os dados do pagamento criado incluindo o IdPagamento</returns>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagamentoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

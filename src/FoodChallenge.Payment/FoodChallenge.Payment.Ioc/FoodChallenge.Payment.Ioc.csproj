@@ -12,7 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FoodChallenge.Payment.Adapter\FoodChallenge.Payment.Adapter.csproj" />
     <ProjectReference Include="..\FoodChallenge.Payment.Application\FoodChallenge.Payment.Application.csproj" />
-    <ProjectReference Include="..\FoodChallenge.Infrastructure.Data.Postgres\FoodChallenge.Infrastructure.Data.Postgres.csproj" />
+    <ProjectReference Include="..\FoodChallenge.Infrastructure.Data\FoodChallenge.Infrastructure.Data.csproj" />
   </ItemGroup>
 
 </Project>

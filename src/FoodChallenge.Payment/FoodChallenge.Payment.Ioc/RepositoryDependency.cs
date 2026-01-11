@@ -1,12 +1,12 @@
-﻿using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Clientes;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Clientes.Interfaces;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Pedidos;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Pedidos.Interfaces;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Preparos;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Preparos.Interfaces;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Produtos;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Produtos.Interfaces;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Seeds;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Clientes;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Clientes.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Pedidos;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Pedidos.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Preparos;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Preparos.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Produtos;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Produtos.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Seeds;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FoodChallenge.Ioc

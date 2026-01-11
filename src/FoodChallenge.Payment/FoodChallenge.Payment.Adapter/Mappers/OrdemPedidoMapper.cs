@@ -1,5 +1,5 @@
 using FoodChallenge.CrossCutting.Paging;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Preparos;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Preparos;
 using FoodChallenge.Payment.Domain.Enums;
 using FoodChallenge.Payment.Domain.Preparos;
 

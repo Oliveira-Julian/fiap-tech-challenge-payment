@@ -12,10 +12,10 @@ public static class PagamentoPresenter
 
         return new PagamentoResponse
         {
+            Id = pagamento.Id.GetValueOrDefault(),
             QrCode = pagamento.QrCode,
             Status = (int)pagamento.Status,
             DescricaoStatus = pagamento.Status.GetDescription(),
-            IdMercadoPagoPagamento = pagamento.IdMercadoPagoPagamento
         };
     }
 }

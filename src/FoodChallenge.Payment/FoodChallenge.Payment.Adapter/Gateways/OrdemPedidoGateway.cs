@@ -1,4 +1,4 @@
-﻿using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Preparos.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Preparos.Interfaces;
 using FoodChallenge.Payment.Adapter.Mappers;
 using FoodChallenge.Payment.Application.Preparos;
 using FoodChallenge.Payment.Domain.Preparos;

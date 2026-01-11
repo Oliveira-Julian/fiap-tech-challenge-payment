@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodChallenge.Common", "Foo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodChallenge.Infrastructure.Clients.MercadoPago", "FoodChallenge.Infrastructure.Clients.MercadoPago\FoodChallenge.Infrastructure.Clients.MercadoPago.csproj", "{0DB69327-B1A8-88AC-7F04-61CEA0657D89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodChallenge.Infrastructure.Data.Postgres", "FoodChallenge.Infrastructure.Data.Postgres\FoodChallenge.Infrastructure.Data.Postgres.csproj", "{82102372-A772-3495-8D3B-92A93F68A9BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodChallenge.Infrastructure.Data", "FoodChallenge.Infrastructure.Data\FoodChallenge.Infrastructure.Data.csproj", "{82102372-A772-3495-8D3B-92A93F68A9BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodChallenge.Infrastructure.Http", "FoodChallenge.Infrastructure.Http\FoodChallenge.Infrastructure.Http.csproj", "{84D1A2F0-7FE7-C3FB-71AC-522E06492A62}"
 EndProject

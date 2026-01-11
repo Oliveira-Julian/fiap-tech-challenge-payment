@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using FoodChallenge.Common.Validators;
 using FoodChallenge.Infrastructure.Clients.MercadoPago;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Clientes.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Clientes.Interfaces;
 using FoodChallenge.Ioc;
 
 var builder = WebApplication.CreateBuilder(args);
