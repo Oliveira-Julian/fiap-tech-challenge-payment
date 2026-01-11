@@ -17,13 +17,11 @@ namespace FoodChallenge.Payment.Application.Pagamentos.UseCases;
 public sealed class ConfirmaPagamentoMercadoPagoUseCase(
     ValidationContext validationContext,
     IUnitOfWork unitOfWork,
-    IPagamentoGateway pagamentoGateway,
-    IPedidoGateway pedidoGateway,
-    IOrdemPedidoGateway ordemPedidoGateway) : IConfirmaPagamentoMercadoPagoUseCase
+    IPagamentoGateway pagamentoGateway) : IConfirmaPagamentoMercadoPagoUseCase
 {
     private readonly ILogger logger = Log.ForContext<ConfirmaPagamentoMercadoPagoUseCase>();
 
-    public async Task<Pedido> ExecutarAsync(NotificacaoMercadoPago notificacaoMercadoPago, CancellationToken cancellationToken)
+    public async Task<Pagamento> ExecutarAsync(NotificacaoMercadoPago notificacaoMercadoPago, CancellationToken cancellationToken)
     {
         logger.Information(Logs.InicioExecucaoServico, nameof(ConfirmaPagamentoMercadoPagoUseCase), nameof(ExecutarAsync));
 
@@ -38,7 +36,7 @@ public sealed class ConfirmaPagamentoMercadoPagoUseCase(
             var pagamento = await pagamentoGateway.ObterPagamentoIdMercadoPagoAsync(notificacaoMercadoPago.Id, cancellationToken);
             if (pagamento is null || !pagamento.IdPedido.HasValue)
             {
-                validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pedido)));
+                validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pagamento)));
                 return default;
             }
 
@@ -46,41 +44,43 @@ public sealed class ConfirmaPagamentoMercadoPagoUseCase(
 
             if (pagamentoMercadoPago is null || string.IsNullOrEmpty(pagamentoMercadoPago.IdMercadoPagoPagamento))
             {
-                validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pedido)));
+                validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pagamento)));
                 return default;
             }
 
-            var pedido = await pedidoGateway.ObterPedidoComRelacionamentosAsync(pagamento.IdPedido.Value, cancellationToken);
-            if (pedido is null)
-            {
-                validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pedido)));
-                return default;
-            }
+            // var pedido = await pedidoGateway.ObterPedidoComRelacionamentosAsync(pagamento.IdPedido.Value, cancellationToken);
+            // if (pedido is null)
+            // {
+            //     validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pedido)));
+            //     return default;
+            // }
 
-            validationContext.AddValidations(pedido, new PedidoPagamentoSpecification());
+            // validationContext.AddValidations(pedido, new PedidoPagamentoSpecification());
 
-            if (validationContext.HasValidations)
-                return default;
+            // if (validationContext.HasValidations)
+            //     return default;
 
             pagamento.AtualizarStatus(notificacaoMercadoPago.Status);
             pagamentoGateway.AtualizarPagamento(pagamento);
 
-            if (notificacaoMercadoPago.Status != PagamentoStatus.Aprovado)
-                return pedido;
+            
+            //TODO -  Migrar para o MS Order, criar um endpoint para atualizar o status do pedido e criar a ordem do pedido, 
+            // o MS Payment não deve ter essa responsabilidade e deve chamar a api do MS Order para essas atualizações 
+            
+            // if (notificacaoMercadoPago.Status != PagamentoStatus.Aprovado)
+            //     return pedido;
 
-            pedido.AtualizarStatusPago();
+            // pedido.AtualizarStatusPago();
 
-            pedidoGateway.AtualizarPedido(pedido);
+            // pedidoGateway.AtualizarPedido(pedido);
 
-            var ordemPedido = new OrdemPedido();
-            ordemPedido.Cadastrar(pedido.Id.Value);
-            await ordemPedidoGateway.CadastrarOrdemPedidoAsync(ordemPedido, cancellationToken);
+            // var ordemPedido = new OrdemPedido();
+            // ordemPedido.Cadastrar(pedido.Id.Value);
+            // await ordemPedidoGateway.CadastrarOrdemPedidoAsync(ordemPedido, cancellationToken);
+            
+            logger.Information(Logs.FimExecucaoServico, nameof(ConfirmaPagamentoMercadoPagoUseCase), nameof(ExecutarAsync), pagamento);
 
-            await unitOfWork.CommitAsync();
-
-            logger.Information(Logs.FimExecucaoServico, nameof(ConfirmaPagamentoMercadoPagoUseCase), nameof(ExecutarAsync), pedido);
-
-            return pedido;
+            return pagamento;
 
         }
         catch (Exception ex)

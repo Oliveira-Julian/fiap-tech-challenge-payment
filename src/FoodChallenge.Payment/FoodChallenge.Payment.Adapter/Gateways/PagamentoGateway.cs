@@ -86,4 +86,10 @@ public class PagamentoGateway : IPagamentoGateway
         var pagamento = MercadoPagoOrderMapper.ToDomain(response, ordemId, request.IdPedido); 
         return pagamento;
     }
+
+    public async Task<Pagamento> ObterPagamentoPorIdPedidoAsync(Guid idPedido, CancellationToken cancellationToken)
+    {
+        var pagamentoEntity = await pagamentoRepository.ObterPagamentoPorIdPedidoAsync(idPedido, cancellationToken);
+        return PagamentoMapper.ToDomain(pagamentoEntity);
+    }
 }

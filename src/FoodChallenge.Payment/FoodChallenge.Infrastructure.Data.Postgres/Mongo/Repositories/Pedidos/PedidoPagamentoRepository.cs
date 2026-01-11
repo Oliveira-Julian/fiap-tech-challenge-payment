@@ -15,4 +15,9 @@ public class PedidoPagamentoRepository : RepositoryBase<PagamentoEntity>, IPedid
     {
         return await _collection.Find(e => e.IdMercadoPagoPagamento == idMercadoPagoPagamento).FirstOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<PagamentoEntity> ObterPagamentoPorIdPedidoAsync(Guid idPedido, CancellationToken cancellationToken, bool tracking = false)
+    {
+        return await _collection.Find(e => e.IdPedido == idPedido).FirstOrDefaultAsync(cancellationToken);
+    }
 }

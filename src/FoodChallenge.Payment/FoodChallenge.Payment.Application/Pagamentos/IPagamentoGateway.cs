@@ -12,4 +12,5 @@ public interface IPagamentoGateway
     Task<Pagamento> CadastrarPedidoMercadoPagoAsync(Pedido pedido, CancellationToken cancellationToken);
     Task<Pagamento> ObterPagamentoIdMercadoPagoAsync(string idMercadoPagoPagamento, CancellationToken cancellationToken);
     Task<Pagamento> CriarPagamentoAsync(CriarPagamentoRequest request, CancellationToken cancellationToken);
+    Task<Pagamento> ObterPagamentoPorIdPedidoAsync(Guid idPedido, CancellationToken cancellationToken);
 }
