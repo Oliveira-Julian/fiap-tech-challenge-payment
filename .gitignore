@@ -56,3 +56,8 @@ nunit-*.xml
 .DS_Store
 /src/FoodChallenge/.idea
 /src/FoodChallenge/.vs
+src/FoodChallenge.Payment/.idea/.idea.FoodChallenge.Payment/.idea/data_source_mapping.xml
+src/FoodChallenge.Payment/.idea/.idea.FoodChallenge.Payment/.idea/dataSources.xml
+src/FoodChallenge.Payment/.idea/.idea.FoodChallenge.Payment/.idea/db-forest-config.xml
+src/FoodChallenge.Payment/.idea/.idea.FoodChallenge.Payment/.idea/indexLayout.xml
+src/FoodChallenge.Payment/.idea/.idea.FoodChallenge.Payment/.idea/vcs.xml

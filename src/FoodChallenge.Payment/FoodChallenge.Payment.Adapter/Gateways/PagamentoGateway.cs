@@ -3,6 +3,7 @@ using FoodChallenge.Infrastructure.Clients.MercadoPago.Settings;
 using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Pedidos.Interfaces;
 using FoodChallenge.Payment.Adapter.Mappers;
 using FoodChallenge.Payment.Application.Pagamentos;
+using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
 using FoodChallenge.Payment.Domain.Globalization;
 using FoodChallenge.Payment.Domain.Pagamentos;
 using FoodChallenge.Payment.Domain.Pedidos;
@@ -68,6 +69,21 @@ public class PagamentoGateway : IPagamentoGateway
             throw new Exception(Textos.ErroInesperado);
 
         var pagamento = MercadoPagoOrderMapper.ToDomain(response);
+
+        return pagamento;
+    }
+
+    public async Task<Pagamento> CriarPagamentoAsync(CriarPagamentoRequest request, CancellationToken cancellationToken)
+    {
+        var ordemId = Guid.NewGuid();
+        var mercadoPagoRequest = MercadoPagoOrderMapper.ToRequest(request, mercadoPagoSettings);
+
+        var response = await mercadoPagoClient.CadastrarOrdemAsync(ordemId, mercadoPagoRequest, cancellationToken);
+
+        if (response is null)
+            throw new Exception(Textos.ErroInesperado);
+
+        var pagamento = MercadoPagoOrderMapper.ToDomain(response, ordemId, request.IdPedido);
 
         return pagamento;
     }

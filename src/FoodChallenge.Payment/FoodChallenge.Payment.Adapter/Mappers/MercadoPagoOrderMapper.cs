@@ -1,6 +1,7 @@
 ﻿using FoodChallenge.Common.Extensions;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Models;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Settings;
+using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
 using FoodChallenge.Payment.Domain.Enums;
 using FoodChallenge.Payment.Domain.Pagamentos;
 using FoodChallenge.Payment.Domain.Pedidos;
@@ -58,6 +59,52 @@ public static class MercadoPagoOrderMapper
                     };
 
                     return item;
+                })
+        };
+
+        return order;
+    }
+
+    public static CreateOrderRequest ToRequest(CriarPagamentoRequest request, MercadoPagoSettings settings)
+    {
+        if (request is null) return default;
+
+        var order = new CreateOrderRequest
+        {
+            Type = Type,
+            TotalAmount = request.ValorTotal.ToString("F2", CultureInfo.InvariantCulture),
+            Description = $"Pedido {request.IdPedido} realizado no FoodChallenge",
+            ExternalReference = request.CodigoPedido,
+            ExpirationTime = ExpirationTime,
+            Config = new Config
+            {
+                Qr = new Qr
+                {
+                    ExternalPosId = settings.CaixaCodigo,
+                    Mode = Mode
+                }
+            },
+            Transactions = new Transactions
+            {
+                Payments =
+                [
+                    new MercadoPago.Payment { Amount = request.ValorTotal.ToString("F2", CultureInfo.InvariantCulture) }
+                ]
+            },
+            Items = request.Itens?.Select(item =>
+                {
+                    return new Item
+                    {
+                        Title = item.Nome,
+                        UnitPrice = item.Valor.ToString("F2", CultureInfo.InvariantCulture),
+                        Quantity = item.Quantidade,
+                        UnitMeasure = UnitMeasure,
+                        ExternalCode = item.Codigo,
+                        ExternalCategories =
+                        [
+                            new() { Id = item.Categoria }
+                        ]
+                    };
                 })
         };
 

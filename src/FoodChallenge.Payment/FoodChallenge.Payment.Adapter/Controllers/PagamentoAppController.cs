@@ -9,6 +9,7 @@ using FoodChallenge.Payment.Adapter.Gateways;
 using FoodChallenge.Payment.Adapter.Mappers;
 using FoodChallenge.Payment.Adapter.Presenters;
 using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
+using FoodChallenge.Payment.Application.Pagamentos.Models.Responses;
 using FoodChallenge.Payment.Application.Pagamentos.UseCases;
 using FoodChallenge.Payment.Application.Pedidos.Models.Responses;
 using FoodChallenge.Payment.Domain.Globalization;
@@ -53,5 +54,16 @@ public class PagamentoAppController(ValidationContext validationContext,
 
         var response = PedidoPresenter.ToResponse(pedido);
         return Resposta.ComSucesso(string.Format(Textos.PagamentoRealizadoComSucesso, response?.Id));
+    }
+
+    public async Task<Resposta> CriarPagamentoAsync(CriarPagamentoRequest request, CancellationToken cancellationToken)
+    {
+        var pagamentoGateway = new PagamentoGateway(pagamentoDataSource, mercadoPagoClient, mercadoPagoSettings);
+        var useCase = new CriaPagamentoUseCase(validationContext, unitOfWork, pagamentoGateway);
+
+        var pagamento = await useCase.ExecutarAsync(request, cancellationToken);
+
+        var response = PagamentoPresenter.ToResponse(pagamento);
+        return Resposta<PagamentoResponse>.ComSucesso(response);
     }
 }
