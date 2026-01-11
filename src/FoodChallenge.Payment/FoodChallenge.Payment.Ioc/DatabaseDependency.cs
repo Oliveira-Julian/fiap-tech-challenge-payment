@@ -1,5 +1,5 @@
-﻿using FoodChallenge.Common.Interfaces;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Context;
+using FoodChallenge.Common.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Context;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FoodChallenge.Ioc

@@ -1,10 +1,10 @@
-﻿using FoodChallenge.Common.Entities;
+using FoodChallenge.Common.Entities;
 using FoodChallenge.Common.Interfaces;
 using FoodChallenge.Common.Validators;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Clients;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Settings;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Pedidos.Interfaces;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Preparos.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Pedidos.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Preparos.Interfaces;
 using FoodChallenge.Payment.Adapter.Gateways;
 using FoodChallenge.Payment.Adapter.Mappers;
 using FoodChallenge.Payment.Adapter.Presenters;

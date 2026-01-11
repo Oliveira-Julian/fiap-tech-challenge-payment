@@ -1,6 +1,6 @@
-﻿using FoodChallenge.Infrastructure.Clients.MercadoPago.Clients;
+using FoodChallenge.Infrastructure.Clients.MercadoPago.Clients;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Settings;
-using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Pedidos.Interfaces;
+using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Pedidos.Interfaces;
 using FoodChallenge.Payment.Adapter.Mappers;
 using FoodChallenge.Payment.Application.Pagamentos;
 using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
