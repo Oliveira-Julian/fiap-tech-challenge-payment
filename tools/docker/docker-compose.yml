@@ -1,7 +1,7 @@
 services:
-  foodchallenge_db:
+  foodchallenge_mongo_db:
     image: mongo:7
-    container_name: foodchallenge_db
+    container_name: foodchallenge_mongo_db
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
@@ -15,7 +15,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - foodchallenge_data:/data/db
+      - foodchallenge_mongo_data:/data/db
     networks:
       - foodchallenge_network
 
@@ -27,11 +27,16 @@ services:
       dockerfile: ../../tools/docker/build/dotnet.web-api.Dockerfile
       target: final
     environment:
-      MongoDb__ConnectionString: ${MONGO_CONNECTION_STRING}
-      MongoDb__DatabaseName: ${MONGO_DATABASE}
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      MongoDb__ConnectionString: ${MongoDb__ConnectionString}
+      MongoDb__DatabaseName: ${MONGO_DATABASE}
+      MercadoPago__BaseUrl: ${MercadoPago__BaseUrl}
+      MercadoPago__AccessToken: ${MercadoPago__AccessToken}
+      MercadoPago__UserId: ${MercadoPago__UserId}
+      MercadoPago__CaixaCodigo: ${MercadoPago__CaixaCodigo}
+      OAuth__Authority: ${OAuth__Authority}
     depends_on:
-      foodchallenge_db:
+      foodchallenge_mongo_db:
         condition: service_healthy
     networks:
       - foodchallenge_network
@@ -39,7 +44,7 @@ services:
       - "5002:5002"
 
 volumes:
-  foodchallenge_data:
+  foodchallenge_mongo_data:
     driver: local
 
 networks:

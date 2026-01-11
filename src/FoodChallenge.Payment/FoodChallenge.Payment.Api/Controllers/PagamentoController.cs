@@ -37,7 +37,7 @@ public class PagamentoController(
     /// </summary>
     /// <param name="request">Dados do pagamento.</param>
     /// <param name="cancellationToken">Token de cancelamento</param>
-    [HttpPost("criar")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
