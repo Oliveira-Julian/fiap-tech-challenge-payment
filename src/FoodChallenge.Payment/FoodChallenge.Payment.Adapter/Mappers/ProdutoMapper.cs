@@ -1,4 +1,4 @@
-﻿using FoodChallenge.Infrastructure.Data.Postgres.EntityFramework.Repositories.Produtos;
+﻿using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Produtos;
 using FoodChallenge.Payment.Domain.Enums;
 using FoodChallenge.Payment.Domain.Produtos;
 

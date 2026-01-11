@@ -1,4 +1,4 @@
-using FoodChallenge.Infrastructure.Data.Postgres.EntityFramework.Repositories.Pedidos;
+using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Pedidos;
 using FoodChallenge.Payment.Domain.Pedidos;
 
 namespace FoodChallenge.Payment.Adapter.Mappers;
@@ -21,8 +21,7 @@ public static class PedidoItemMapper
             DataExclusao = pedidoItemEntity.DataExclusao,
             Ativo = pedidoItemEntity.Ativo,
             Quantidade = pedidoItemEntity.Quantidade,
-            Valor = pedidoItemEntity.Valor,
-            Produto = ProdutoMapper.ToDomain(pedidoItemEntity.Produto)
+            Valor = pedidoItemEntity.Valor
         };
     }
 
@@ -42,8 +41,7 @@ public static class PedidoItemMapper
             DataExclusao = pedidoItem.DataExclusao,
             Ativo = pedidoItem.Ativo,
             Quantidade = pedidoItem.Quantidade,
-            Valor = pedidoItem.Valor,
-            Produto = ProdutoMapper.ToEntity(pedidoItem.Produto)
+            Valor = pedidoItem.Valor
         };
     }
 }

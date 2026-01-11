@@ -1,5 +1,5 @@
 using FoodChallenge.CrossCutting.Paging;
-using FoodChallenge.Infrastructure.Data.Postgres.EntityFramework.Repositories.Preparos;
+using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Preparos;
 using FoodChallenge.Payment.Domain.Enums;
 using FoodChallenge.Payment.Domain.Preparos;
 
@@ -21,8 +21,7 @@ public static class OrdemPedidoMapper
             Ativo = ordemPedidoEntity.Ativo,
             Status = (PreparoStatus)ordemPedidoEntity.Status,
             DataInicioPreparacao = ordemPedidoEntity.DataInicioPreparacao,
-            DataFimPreparacao = ordemPedidoEntity.DataFimPreparacao,
-            Pedido = PedidoMapper.ToDomain(ordemPedidoEntity.Pedido)
+            DataFimPreparacao = ordemPedidoEntity.DataFimPreparacao
         };
     }
 
@@ -40,8 +39,7 @@ public static class OrdemPedidoMapper
             Ativo = ordemPedido.Ativo,
             Status = (int)ordemPedido.Status,
             DataInicioPreparacao = ordemPedido.DataInicioPreparacao,
-            DataFimPreparacao = ordemPedido.DataFimPreparacao,
-            Pedido = PedidoMapper.ToEntity(ordemPedido.Pedido)
+            DataFimPreparacao = ordemPedido.DataFimPreparacao
         };
     }
 

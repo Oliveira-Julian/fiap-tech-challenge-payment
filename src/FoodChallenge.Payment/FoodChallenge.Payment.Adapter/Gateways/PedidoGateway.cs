@@ -1,4 +1,4 @@
-﻿using FoodChallenge.Infrastructure.Data.Postgres.EntityFramework.Repositories.Pedidos.Interfaces;
+﻿using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Pedidos.Interfaces;
 using FoodChallenge.Payment.Adapter.Mappers;
 using FoodChallenge.Payment.Application.Pedidos;
 using FoodChallenge.Payment.Domain.Enums;

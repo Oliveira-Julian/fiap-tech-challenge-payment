@@ -1,36 +1,21 @@
 services:
   foodchallenge_db:
-    image: postgres
+    image: mongo:7
     container_name: foodchallenge_db
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
       timeout: 3s
       retries: 10
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - foodchallenge_data:/var/lib/postgresql/data
-    networks:
-      - foodchallenge_network
-
-  foodchallenge_payment_migrations:
-    image: foodchallenge/migrations
-    container_name: foodchallenge_payment_migrations
-    build:
-      context: ../../src/FoodChallenge.Payment
-      dockerfile: ../../tools/docker/build/migrations.postgres.Dockerfile
-      target: migrations
-    environment:
-      ConnectionStrings__DbConnection: ${ConnectionStrings__DbConnection}
-    depends_on:
-      foodchallenge_db:
-        condition: service_healthy
+      - foodchallenge_data:/data/db
     networks:
       - foodchallenge_network
 
@@ -42,13 +27,12 @@ services:
       dockerfile: ../../tools/docker/build/dotnet.web-api.Dockerfile
       target: final
     environment:
-      ConnectionStrings__DbConnection: ${ConnectionStrings__DbConnection}
+      MongoDb__ConnectionString: ${MONGO_CONNECTION_STRING}
+      MongoDb__DatabaseName: ${MONGO_DATABASE}
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
     depends_on:
       foodchallenge_db:
         condition: service_healthy
-      foodchallenge_migrations:
-        condition: service_completed_successfully
     networks:
       - foodchallenge_network
     ports:

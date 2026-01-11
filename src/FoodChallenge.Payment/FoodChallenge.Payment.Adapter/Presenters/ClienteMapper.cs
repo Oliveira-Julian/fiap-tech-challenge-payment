@@ -1,4 +1,4 @@
-﻿using FoodChallenge.Infrastructure.Data.Postgres.EntityFramework.Repositories.Clientes;
+﻿using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Clientes;
 using FoodChallenge.Payment.Adapter.Mappers;
 using FoodChallenge.Payment.Domain.Clientes;
 using FoodChallenge.Payment.Domain.Clientes.ValueObjects;
@@ -20,8 +20,7 @@ public static class ClienteMapper
             DataExclusao = clienteEntity.DataExclusao,
             Cpf = new Cpf(clienteEntity.Cpf),
             Email = new Email(clienteEntity.Email),
-            Nome = clienteEntity.Nome,
-            Pedidos = clienteEntity.Pedidos?.Select(PedidoMapper.ToDomain)
+            Nome = clienteEntity.Nome
         };
     }
 
@@ -38,8 +37,7 @@ public static class ClienteMapper
             DataExclusao = cliente.DataExclusao,
             Cpf = cliente.Cpf?.ToString(),
             Email = cliente.Email?.Valor,
-            Nome = cliente.Nome,
-            Pedidos = cliente.Pedidos?.Select(PedidoMapper.ToEntity)?.ToList()
+            Nome = cliente.Nome
         };
     }
 }
