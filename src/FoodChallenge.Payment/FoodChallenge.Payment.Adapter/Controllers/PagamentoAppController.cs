@@ -3,12 +3,13 @@ using FoodChallenge.Common.Interfaces;
 using FoodChallenge.Common.Validators;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Clients;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Settings;
-using FoodChallenge.Infrastructure.Data.Postgres.EntityFramework.Repositories.Pedidos.Interfaces;
-using FoodChallenge.Infrastructure.Data.Postgres.EntityFramework.Repositories.Preparos.Interfaces;
+using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Pedidos.Interfaces;
+using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Preparos.Interfaces;
 using FoodChallenge.Payment.Adapter.Gateways;
 using FoodChallenge.Payment.Adapter.Mappers;
 using FoodChallenge.Payment.Adapter.Presenters;
 using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
+using FoodChallenge.Payment.Application.Pagamentos.Models.Responses;
 using FoodChallenge.Payment.Application.Pagamentos.UseCases;
 using FoodChallenge.Payment.Application.Pedidos.Models.Responses;
 using FoodChallenge.Payment.Domain.Globalization;
@@ -25,8 +26,8 @@ public class PagamentoAppController(ValidationContext validationContext,
 {
     public async Task<byte[]> ObterImagemQrCodeAsync(Guid idPedido, CancellationToken cancellationToken)
     {
-        var pedidoGateway = new PedidoGateway(pedidoDataSource);
-        var useCase = new ObtemImagemQrCodePagamentoUseCase(validationContext, pedidoGateway);
+        var pagamentoGateway = new PagamentoGateway(pagamentoDataSource, mercadoPagoClient, mercadoPagoSettings);
+        var useCase = new ObtemImagemQrCodePagamentoUseCase(validationContext, pagamentoGateway);
 
         return await useCase.ExecutarAsync(idPedido, cancellationToken);
     }
@@ -41,17 +42,38 @@ public class PagamentoAppController(ValidationContext validationContext,
         return Resposta<PedidoResponse>.ComSucesso(PedidoPresenter.ToResponse(pedido));
     }
 
+    //TODO - Criar no MS Order para atualizar o status do pedido e criar a ordem do pedido
     public async Task<Resposta> ConfirmarPagamentoMercadoPagoAsync(WebhookMercadoPagoPagamentoRequest request, CancellationToken cancellationToken)
     {
-        var pedidoGateway = new PedidoGateway(pedidoDataSource);
+        // var pedidoGateway = new PedidoGateway(pedidoDataSource);
         var pagamentoGateway = new PagamentoGateway(pagamentoDataSource, mercadoPagoClient, mercadoPagoSettings);
-        var ordemPedidoGateway = new OrdemPedidoGateway(ordemPedidoDataSource);
-        var useCase = new ConfirmaPagamentoMercadoPagoUseCase(validationContext, unitOfWork, pagamentoGateway, pedidoGateway, ordemPedidoGateway);
+        // var ordemPedidoGateway = new OrdemPedidoGateway(ordemPedidoDataSource);
+        var useCase = new ConfirmaPagamentoMercadoPagoUseCase(validationContext, unitOfWork, pagamentoGateway);
 
         var notificacaoMercadoPago = PagamentoMapper.ToDomain(request);
-        var pedido = await useCase.ExecutarAsync(notificacaoMercadoPago, cancellationToken);
+        try
+        {
+            var pagamento = await useCase.ExecutarAsync(notificacaoMercadoPago, cancellationToken);
 
-        var response = PedidoPresenter.ToResponse(pedido);
-        return Resposta.ComSucesso(string.Format(Textos.PagamentoRealizadoComSucesso, response?.Id));
+            var response = PagamentoPresenter.ToResponse(pagamento);
+            return Resposta<PagamentoResponse>.ComSucesso(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
+    }
+
+    public async Task<Resposta> CriarPagamentoAsync(CriarPagamentoRequest request, CancellationToken cancellationToken)
+    {
+        var pagamentoGateway = new PagamentoGateway(pagamentoDataSource, mercadoPagoClient, mercadoPagoSettings);
+        var useCase = new CriaPagamentoUseCase(validationContext, unitOfWork, pagamentoGateway);
+
+        var pagamento = await useCase.ExecutarAsync(request, cancellationToken);
+
+        var response = PagamentoPresenter.ToResponse(pagamento);
+        return Resposta<PagamentoResponse>.ComSucesso(response);
     }
 }

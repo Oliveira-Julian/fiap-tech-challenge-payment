@@ -1,17 +1,16 @@
 ﻿using FoodChallenge.Common.Validators;
 using FoodChallenge.Payment.Application.Helpers;
 using FoodChallenge.Payment.Application.Pagamentos.Interfaces;
-using FoodChallenge.Payment.Application.Pedidos;
 using FoodChallenge.Payment.Domain.Constants;
 using FoodChallenge.Payment.Domain.Globalization;
-using FoodChallenge.Payment.Domain.Pedidos;
+using FoodChallenge.Payment.Domain.Pagamentos;
 using Serilog;
 
 namespace FoodChallenge.Payment.Application.Pagamentos.UseCases;
 
 public class ObtemImagemQrCodePagamentoUseCase(
     ValidationContext validationContext,
-    IPedidoGateway pedidoGateway) : IObtemImagemQrCodePagamentoUseCase
+    IPagamentoGateway pagamentoGateway) : IObtemImagemQrCodePagamentoUseCase
 {
     private readonly ILogger logger = Log.ForContext<ObtemImagemQrCodePagamentoUseCase>();
 
@@ -19,21 +18,21 @@ public class ObtemImagemQrCodePagamentoUseCase(
     {
         logger.Information(Logs.InicioExecucaoServico, nameof(ObtemImagemQrCodePagamentoUseCase), nameof(ExecutarAsync));
 
-        var pedido = await pedidoGateway.ObterPedidoComRelacionamentosAsync(idPedido, cancellationToken);
-        if (pedido is null)
+        var pagamento = await pagamentoGateway.ObterPagamentoPorIdPedidoAsync(idPedido, cancellationToken);
+        if (pagamento is null)
         {
-            validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pedido)));
+            validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pagamento)));
             return default;
         }
 
-        if (pedido.Pagamento is null)
+        if (string.IsNullOrWhiteSpace(pagamento.QrCode))
         {
-            validationContext.AddValidation(string.Format(Textos.QrCodeNaoFoiGerado, pedido.Id));
+            validationContext.AddValidation(string.Format(Textos.QrCodeNaoFoiGerado, idPedido));
             return default;
         }
 
-        logger.Information(Logs.FimExecucaoServico, nameof(ObtemImagemQrCodePagamentoUseCase), nameof(ExecutarAsync), pedido.Pagamento);
+        logger.Information(Logs.FimExecucaoServico, nameof(ObtemImagemQrCodePagamentoUseCase), nameof(ExecutarAsync), pagamento);
 
-        return QrCodeHelper.GerarImagem(pedido.Pagamento.QrCode);
+        return QrCodeHelper.GerarImagem(pagamento.QrCode);
     }
 }

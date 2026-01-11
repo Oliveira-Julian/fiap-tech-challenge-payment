@@ -1,4 +1,3 @@
-using FoodChallenge.Payment.Application.Clientes.Models.Responses;
 using FoodChallenge.Payment.Application.Pagamentos.Models.Responses;
 using FoodChallenge.Payment.Domain.Enums;
 
@@ -11,7 +10,6 @@ public class PedidoResponse
     public decimal? ValorTotal { get; set; }
     public PedidoStatus? Status { get; set; }
     public string DescricaoStatus { get; set; }
-    public ClienteResponse Cliente { get; set; }
     public PagamentoResponse Pagamento { get; set; }
     public IEnumerable<PedidoItemResponse> Itens { get; set; }
 }

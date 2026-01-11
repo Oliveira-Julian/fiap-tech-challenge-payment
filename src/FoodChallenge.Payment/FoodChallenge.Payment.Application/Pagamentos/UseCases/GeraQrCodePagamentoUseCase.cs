@@ -32,9 +32,7 @@ public sealed class GeraQrCodePagamentoUseCase(
 
             var pagamento = await pagamentoGateway.CadastrarPedidoMercadoPagoAsync(pedido, cancellationToken);
 
-            unitOfWork.BeginTransaction();
             await pagamentoGateway.AdicionarPagamentoAsync(pagamento, cancellationToken);
-            await unitOfWork.CommitAsync();
 
             pedido = await pedidoGateway.ObterPedidoComRelacionamentosAsync(idPedido, cancellationToken);
 

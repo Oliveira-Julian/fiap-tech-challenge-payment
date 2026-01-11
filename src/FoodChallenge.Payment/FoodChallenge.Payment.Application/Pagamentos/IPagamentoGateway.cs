@@ -1,4 +1,5 @@
-﻿using FoodChallenge.Payment.Domain.Pagamentos;
+﻿using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
+using FoodChallenge.Payment.Domain.Pagamentos;
 using FoodChallenge.Payment.Domain.Pedidos;
 
 namespace FoodChallenge.Payment.Application.Pagamentos;
@@ -10,4 +11,6 @@ public interface IPagamentoGateway
     Task<Pagamento> ObterPedidoMercadoPagoAsync(string idPedidoMercadoPago, CancellationToken cancellationToken);
     Task<Pagamento> CadastrarPedidoMercadoPagoAsync(Pedido pedido, CancellationToken cancellationToken);
     Task<Pagamento> ObterPagamentoIdMercadoPagoAsync(string idMercadoPagoPagamento, CancellationToken cancellationToken);
+    Task<Pagamento> CriarPagamentoAsync(CriarPagamentoRequest request, CancellationToken cancellationToken);
+    Task<Pagamento> ObterPagamentoPorIdPedidoAsync(Guid idPedido, CancellationToken cancellationToken);
 }
