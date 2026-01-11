@@ -23,9 +23,7 @@ public sealed class CriaPagamentoUseCase(
 
             var pagamento = await pagamentoGateway.CriarPagamentoAsync(request, cancellationToken);
 
-            unitOfWork.BeginTransaction();
             await pagamentoGateway.AdicionarPagamentoAsync(pagamento, cancellationToken);
-            await unitOfWork.CommitAsync();
 
             logger.Information(Logs.FimExecucaoServico, nameof(CriaPagamentoUseCase), nameof(ExecutarAsync), pagamento);
 

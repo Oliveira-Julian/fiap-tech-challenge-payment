@@ -1,4 +1,7 @@
 using FoodChallenge.Payment.Api.Filters;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using FoodChallenge.Common.Validators;
 using FoodChallenge.Infrastructure.Clients.MercadoPago;
 using FoodChallenge.Infrastructure.Data.Postgres.Mongo.Repositories.Clientes.Interfaces;
@@ -6,6 +9,8 @@ using FoodChallenge.Ioc;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
+BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
 var mongoConnectionString = configuration.GetSection("MongoDb:ConnectionString").Value ?? string.Empty;
 var mongoDatabaseName = configuration.GetSection("MongoDb:DatabaseName").Value ?? string.Empty;

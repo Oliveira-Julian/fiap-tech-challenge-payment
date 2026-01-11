@@ -82,9 +82,8 @@ public class PagamentoGateway : IPagamentoGateway
 
         if (response is null)
             throw new Exception(Textos.ErroInesperado);
-
-        var pagamento = MercadoPagoOrderMapper.ToDomain(response, ordemId, request.IdPedido);
-
+        
+        var pagamento = MercadoPagoOrderMapper.ToDomain(response, ordemId, request.IdPedido); 
         return pagamento;
     }
 }

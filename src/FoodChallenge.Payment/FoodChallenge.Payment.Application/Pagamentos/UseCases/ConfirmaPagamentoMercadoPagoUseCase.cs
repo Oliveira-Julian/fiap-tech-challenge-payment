@@ -62,17 +62,13 @@ public sealed class ConfirmaPagamentoMercadoPagoUseCase(
             if (validationContext.HasValidations)
                 return default;
 
-            unitOfWork.BeginTransaction();
             pagamento.AtualizarStatus(notificacaoMercadoPago.Status);
             pagamentoGateway.AtualizarPagamento(pagamento);
-            await unitOfWork.CommitAsync();
 
             if (notificacaoMercadoPago.Status != PagamentoStatus.Aprovado)
                 return pedido;
 
             pedido.AtualizarStatusPago();
-
-            unitOfWork.BeginTransaction();
 
             pedidoGateway.AtualizarPedido(pedido);
 
