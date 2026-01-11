@@ -47,14 +47,14 @@ public static class MercadoPagoOrderMapper
                 {
                     var item = new Item
                     {
-                        Title = pedidoItem.Produto.Nome,
+                        Title = $"Item {pedidoItem.Codigo}",
                         UnitPrice = pedidoItem.Valor.ToString("F2", CultureInfo.InvariantCulture),
                         Quantity = pedidoItem.Quantidade,
                         UnitMeasure = UnitMeasure,
                         ExternalCode = pedidoItem.Codigo,
                         ExternalCategories =
                         [
-                            new() { Id = pedidoItem.Produto.Categoria.GetDescription() }
+                            new() { Id = "Produto" }
                         ]
                     };
 

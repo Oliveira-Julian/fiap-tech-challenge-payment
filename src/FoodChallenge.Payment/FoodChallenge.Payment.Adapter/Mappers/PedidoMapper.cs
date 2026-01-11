@@ -15,7 +15,6 @@ public static class PedidoMapper
         {
             Id = pedidoEntity.Id,
             IdPagamento = pedidoEntity.IdPagamento,
-            IdCliente = pedidoEntity.IdCliente,
             Codigo = pedidoEntity.Codigo,
             DataAtualizacao = pedidoEntity.DataAtualizacao,
             DataCriacao = pedidoEntity.DataCriacao,
@@ -35,7 +34,6 @@ public static class PedidoMapper
         {
             Id = pedido.Id,
             IdPagamento = pedido.IdPagamento,
-            IdCliente = pedido.IdCliente,
             Codigo = pedido.Codigo,
             DataAtualizacao = pedido.DataAtualizacao,
             DataCriacao = pedido.DataCriacao,
@@ -44,16 +42,6 @@ public static class PedidoMapper
             Status = (int)pedido.Status,
             ValorTotal = pedido.ValorTotal,
             Itens = pedido.Itens?.Select(PedidoItemMapper.ToEntity)?.ToList()
-        };
-    }
-
-    public static Pedido ToDomain(Guid? idCliente)
-    {
-        if (!idCliente.HasValue) return default;
-
-        return new Pedido()
-        {
-            IdCliente = idCliente.Value
         };
     }
 }

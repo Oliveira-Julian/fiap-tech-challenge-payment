@@ -125,7 +125,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         };
 
         var pedido = new Pedido { Id = pagamento.IdPedido, Pagamento = pagamento };
-        pedido.Cadastrar(_faker.Random.Guid());
 
         _pagamentoGateway
             .Setup(p => p.ObterPagamentoIdMercadoPagoAsync(notificacao.Id, It.IsAny<CancellationToken>()))
@@ -163,7 +162,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         };
 
         var pedido = new Pedido { Id = pagamento.IdPedido, Pagamento = pagamento };
-        pedido.Cadastrar(_faker.Random.Guid());
 
         _pagamentoGateway
             .Setup(p => p.ObterPagamentoIdMercadoPagoAsync(notificacao.Id, It.IsAny<CancellationToken>()))
@@ -200,7 +198,6 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         };
 
         var pedido = new Pedido { Id = pagamento.IdPedido, Pagamento = pagamento };
-        pedido.Cadastrar(_faker.Random.Guid());
         pedido.AtualizarStatusPago();
         var validationMessages = new List<string>
         {
