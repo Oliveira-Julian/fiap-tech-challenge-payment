@@ -1,7 +1,7 @@
 services:
-  foodchallenge_db:
+  foodchallenge_mongo_db:
     image: mongo:7
-    container_name: foodchallenge_db
+    container_name: foodchallenge_mongo_db
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
@@ -15,7 +15,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - foodchallenge_data:/data/db
+      - foodchallenge_mongo_data:/data/db
     networks:
       - foodchallenge_network
 
@@ -31,7 +31,7 @@ services:
       MongoDb__DatabaseName: ${MONGO_DATABASE}
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
     depends_on:
-      foodchallenge_db:
+      foodchallenge_mongo_db:
         condition: service_healthy
     networks:
       - foodchallenge_network
@@ -39,7 +39,7 @@ services:
       - "5002:5002"
 
 volumes:
-  foodchallenge_data:
+  foodchallenge_mongo_data:
     driver: local
 
 networks:
