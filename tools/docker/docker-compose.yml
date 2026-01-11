@@ -27,9 +27,14 @@ services:
       dockerfile: ../../tools/docker/build/dotnet.web-api.Dockerfile
       target: final
     environment:
-      MongoDb__ConnectionString: ${MONGO_CONNECTION_STRING}
-      MongoDb__DatabaseName: ${MONGO_DATABASE}
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      MongoDb__ConnectionString: ${MongoDb__ConnectionString}
+      MongoDb__DatabaseName: ${MONGO_DATABASE}
+      MercadoPago__BaseUrl: ${MercadoPago__BaseUrl}
+      MercadoPago__AccessToken: ${MercadoPago__AccessToken}
+      MercadoPago__UserId: ${MercadoPago__UserId}
+      MercadoPago__CaixaCodigo: ${MercadoPago__CaixaCodigo}
+      OAuth__Authority: ${OAuth__Authority}
     depends_on:
       foodchallenge_mongo_db:
         condition: service_healthy
