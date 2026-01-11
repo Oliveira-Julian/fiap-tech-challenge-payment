@@ -4,7 +4,6 @@ using FoodChallenge.Common.Validators;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Clients;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Settings;
 using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Pedidos.Interfaces;
-using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Preparos.Interfaces;
 using FoodChallenge.Payment.Adapter.Gateways;
 using FoodChallenge.Payment.Adapter.Mappers;
 using FoodChallenge.Payment.Adapter.Presenters;
@@ -20,7 +19,6 @@ public class PagamentoAppController(ValidationContext validationContext,
     IUnitOfWork unitOfWork,
     IPedidoRepository pedidoDataSource,
     IPedidoPagamentoRepository pagamentoDataSource,
-    IOrdemPedidoRepository ordemPedidoDataSource,
     IMercadoPagoClient mercadoPagoClient,
     MercadoPagoSettings mercadoPagoSettings)
 {
@@ -69,7 +67,7 @@ public class PagamentoAppController(ValidationContext validationContext,
     public async Task<Resposta> CriarPagamentoAsync(CriarPagamentoRequest request, CancellationToken cancellationToken)
     {
         var pagamentoGateway = new PagamentoGateway(pagamentoDataSource, mercadoPagoClient, mercadoPagoSettings);
-        var useCase = new CriaPagamentoUseCase(validationContext, unitOfWork, pagamentoGateway);
+        var useCase = new CriaPagamentoUseCase(unitOfWork, pagamentoGateway);
 
         var pagamento = await useCase.ExecutarAsync(request, cancellationToken);
 

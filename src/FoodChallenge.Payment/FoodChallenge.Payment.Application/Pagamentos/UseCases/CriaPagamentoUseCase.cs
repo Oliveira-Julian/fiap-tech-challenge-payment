@@ -1,5 +1,4 @@
 using FoodChallenge.Common.Interfaces;
-using FoodChallenge.Common.Validators;
 using FoodChallenge.Payment.Application.Pagamentos.Interfaces;
 using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
 using FoodChallenge.Payment.Domain.Constants;
@@ -9,7 +8,6 @@ using Serilog;
 namespace FoodChallenge.Payment.Application.Pagamentos.UseCases;
 
 public sealed class CriaPagamentoUseCase(
-    ValidationContext validationContext,
     IUnitOfWork unitOfWork,
     IPagamentoGateway pagamentoGateway) : ICriaPagamentoUseCase
 {

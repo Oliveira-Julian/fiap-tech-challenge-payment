@@ -2,10 +2,9 @@
 {
     public sealed class PagamentoResponse
     {
-        public Guid IdPagamento { get; set; }
+        public Guid Id { get; set; }
         public string QrCode { get; set; }
         public int Status { get; set; }
         public string DescricaoStatus { get; set; }
-        public string IdMercadoPagoPagamento { get; set; }
     }
 }
