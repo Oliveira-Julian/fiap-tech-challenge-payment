@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FoodChallenge.Common\FoodChallenge.Common.csproj" />
     <ProjectReference Include="..\FoodChallenge.Infrastructure.Clients.MercadoPago\FoodChallenge.Infrastructure.Clients.MercadoPago.csproj" />
+    <ProjectReference Include="..\FoodChallenge.Infrastructure.Clients.Orders\FoodChallenge.Infrastructure.Clients.Orders.csproj" />
     <ProjectReference Include="..\FoodChallenge.Infrastructure.Data\FoodChallenge.Infrastructure.Data.csproj" />
     <ProjectReference Include="..\FoodChallenge.Payment.Application\FoodChallenge.Payment.Application.csproj" />
   </ItemGroup>

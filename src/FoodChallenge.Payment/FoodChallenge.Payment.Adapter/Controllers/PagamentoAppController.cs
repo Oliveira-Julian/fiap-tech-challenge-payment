@@ -3,6 +3,7 @@ using FoodChallenge.Common.Interfaces;
 using FoodChallenge.Common.Validators;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Clients;
 using FoodChallenge.Infrastructure.Clients.MercadoPago.Settings;
+using FoodChallenge.Infrastructure.Clients.Orders.Clients;
 using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Pedidos.Interfaces;
 using FoodChallenge.Payment.Adapter.Gateways;
 using FoodChallenge.Payment.Adapter.Mappers;
@@ -49,19 +50,10 @@ public class PagamentoAppController(ValidationContext validationContext,
         var useCase = new ConfirmaPagamentoMercadoPagoUseCase(validationContext, unitOfWork, pagamentoGateway);
 
         var notificacaoMercadoPago = PagamentoMapper.ToDomain(request);
-        try
-        {
-            var pagamento = await useCase.ExecutarAsync(notificacaoMercadoPago, cancellationToken);
+        var pagamento = await useCase.ExecutarAsync(notificacaoMercadoPago, cancellationToken);
 
-            var response = PagamentoPresenter.ToResponse(pagamento);
-            return Resposta<PagamentoResponse>.ComSucesso(response);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-        
+        var response = PagamentoPresenter.ToResponse(pagamento);
+        return Resposta<PagamentoResponse>.ComSucesso(response);
     }
 
     public async Task<Resposta> CriarPagamentoAsync(CriarPagamentoRequest request, CancellationToken cancellationToken)

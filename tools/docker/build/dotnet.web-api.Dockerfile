@@ -4,6 +4,7 @@ ARG DOTNET_SDK=mcr.microsoft.com/dotnet/sdk:9.0-alpine
 FROM ${DOTNET_RUNTIME} AS base
 USER $APP_UID
 WORKDIR /app
+EXPOSE 5002
 
 FROM ${DOTNET_SDK} AS build
 ARG BUILD_CONFIGURATION=Release

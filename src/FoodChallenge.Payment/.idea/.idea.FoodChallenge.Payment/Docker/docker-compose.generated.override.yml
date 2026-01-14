@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  foodchallenge_payment_api:
+    build:
+      context: "D:\\Fiap\\Desenvolvimento\\fiap-tech-challenge-payment\\src\\FoodChallenge.Payment"
+      dockerfile: "../../tools/docker/build/dotnet.web-api.Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net9.0/FoodChallenge.Payment.Api.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "foodchallenge/payment-api:dev"
+    ports: []
+    volumes:
+    - "D:\\Fiap\\Desenvolvimento\\fiap-tech-challenge-payment\\src\\FoodChallenge.Payment\\\
+      FoodChallenge.Payment.Api:/app:rw"
+    - "D:\\Fiap\\Desenvolvimento\\fiap-tech-challenge-payment\\src\\FoodChallenge.Payment:/src:rw"
+    - "C:\\Users\\Capuano\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"

@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodChallenge.Payment.UnitT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodChallenge.Payment.Api", "FoodChallenge.Payment.Api\FoodChallenge.Payment.Api.csproj", "{603277D2-E621-5B30-4CA8-01C9490D963A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodChallenge.Infrastructure.Clients.Orders", "FoodChallenge.Infrastructure.Clients.Orders\FoodChallenge.Infrastructure.Clients.Orders.csproj", "{4B6F2CD3-396D-4186-906C-BE1FC823C369}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{603277D2-E621-5B30-4CA8-01C9490D963A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{603277D2-E621-5B30-4CA8-01C9490D963A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{603277D2-E621-5B30-4CA8-01C9490D963A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B6F2CD3-396D-4186-906C-BE1FC823C369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B6F2CD3-396D-4186-906C-BE1FC823C369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B6F2CD3-396D-4186-906C-BE1FC823C369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B6F2CD3-396D-4186-906C-BE1FC823C369}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,6 +98,7 @@ Global
 		{1887765E-5EA9-9E10-644A-463CD0A1A9A6} = {E18E7905-C7E2-4EC7-A420-F42A10C74E42}
 		{9F11CAA5-2C36-FEF0-4998-141E6F3A724A} = {F54C6304-1054-4DE5-8355-CFB1FB1F69D0}
 		{603277D2-E621-5B30-4CA8-01C9490D963A} = {E18E7905-C7E2-4EC7-A420-F42A10C74E42}
+		{4B6F2CD3-396D-4186-906C-BE1FC823C369} = {E18E7905-C7E2-4EC7-A420-F42A10C74E42}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6D89C63D-B801-4050-B90C-DDD77E489D69}

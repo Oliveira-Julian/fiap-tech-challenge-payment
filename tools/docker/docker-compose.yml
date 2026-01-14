@@ -28,6 +28,7 @@ services:
       target: final
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ASPNETCORE_URLS: "http://+:5002"
       MongoDb__ConnectionString: ${MongoDb__ConnectionString}
       MongoDb__DatabaseName: ${MONGO_DATABASE}
       MercadoPago__BaseUrl: ${MercadoPago__BaseUrl}

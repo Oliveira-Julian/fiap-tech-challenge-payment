@@ -10,6 +10,12 @@ using FoodChallenge.Ioc;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+// Configure Kestrel to listen on the correct port for Docker
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(5002); // Listen on port 5002 on any IP
+});
+
 BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
 var mongoConnectionString = configuration.GetSection("MongoDb:ConnectionString").Value ?? string.Empty;
@@ -54,12 +60,18 @@ app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "FoodChallenge API v1");
+    options.RoutePrefix = "swagger"; // Ensures swagger is available at /swagger
 });
 
 app.UseHeaderPropagation();
 app.MapHealthCheckDefaultEndpoints();
 app.UseCors(originsPolicy);
-app.UseHttpsRedirection();
+
+// Only use HTTPS redirection in production
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseAuthorization();
 app.MapControllers();
 
