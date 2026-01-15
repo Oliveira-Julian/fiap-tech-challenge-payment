@@ -4,6 +4,7 @@ using FoodChallenge.Common.Interfaces;
 using FoodChallenge.Common.Validators;
 using FoodChallenge.Payment.Application.Pagamentos;
 using FoodChallenge.Payment.Application.Pagamentos.UseCases;
+using FoodChallenge.Payment.Application.Pedidos;
 using FoodChallenge.Payment.Domain.Enums;
 using FoodChallenge.Payment.Domain.Globalization;
 using FoodChallenge.Payment.Domain.Pagamentos;
@@ -16,6 +17,7 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
     private readonly Faker _faker;
     private readonly ValidationContext _validationContext;
     private readonly Mock<IPagamentoGateway> _pagamentoGateway;
+    private readonly Mock<IPedidoGateway> _pedidoGateway;
     private readonly Mock<IUnitOfWork> _unitOfWork;
     private readonly ConfirmaPagamentoMercadoPagoUseCase _useCase;
 
@@ -25,12 +27,14 @@ public class ConfirmaPagamentoMercadoPagoUseCaseTests : TestBase
         _faker = GetFaker();
         _validationContext = new ValidationContext();
         _pagamentoGateway = new Mock<IPagamentoGateway>();
+        _pedidoGateway = new Mock<IPedidoGateway>();
         _unitOfWork = new Mock<IUnitOfWork>();
 
         _useCase = new ConfirmaPagamentoMercadoPagoUseCase(
             _validationContext,
             _unitOfWork.Object,
-            _pagamentoGateway.Object
+            _pagamentoGateway.Object,
+            _pedidoGateway.Object
         );
     }
 

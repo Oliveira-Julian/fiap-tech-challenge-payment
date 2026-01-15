@@ -23,7 +23,7 @@ public sealed class GeraQrCodePagamentoUseCase(
         {
             logger.Information(Logs.InicioExecucaoServico, nameof(ConfirmaPagamentoMercadoPagoUseCase), nameof(ExecutarAsync));
 
-            var pedido = await pedidoGateway.ObterPedidoComRelacionamentosAsync(idPedido, cancellationToken);
+            var pedido = await pedidoGateway.ObterPedidoAsync(idPedido, cancellationToken);
             if (pedido is null)
             {
                 validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pedido)));
@@ -34,7 +34,7 @@ public sealed class GeraQrCodePagamentoUseCase(
 
             await pagamentoGateway.AdicionarPagamentoAsync(pagamento, cancellationToken);
 
-            pedido = await pedidoGateway.ObterPedidoComRelacionamentosAsync(idPedido, cancellationToken);
+            pedido = await pedidoGateway.ObterPedidoAsync(idPedido, cancellationToken);
 
             logger.Information(Logs.FimExecucaoServico, nameof(ConfirmaPagamentoMercadoPagoUseCase), nameof(ExecutarAsync), pedido);
 

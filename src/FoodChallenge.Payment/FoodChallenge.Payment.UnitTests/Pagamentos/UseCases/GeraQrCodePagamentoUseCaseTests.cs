@@ -43,14 +43,14 @@ public class GeraQrCodePagamentoUseCaseTests : TestBase
         var validationMessages = new List<string> { string.Format(Textos.NaoEncontrado, nameof(Pedido)) };
 
         _pedidoGateway
-            .Setup(p => p.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false))
+            .Setup(p => p.ObterPedidoAsync(idPedido, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Pedido)null);
         var result = await _useCase.ExecutarAsync(idPedido, CancellationToken.None);
         Assert.Null(result);
         Assert.True(_validationContext.HasValidations);
         Assert.Equal(validationMessages, _validationContext.ValidationMessages);
 
-        _pedidoGateway.Verify(p => p.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false), Times.Once);
+        _pedidoGateway.Verify(p => p.ObterPedidoAsync(idPedido, It.IsAny<CancellationToken>()), Times.Once);
 
         _pagamentoGateway.Verify(p => p.CadastrarPedidoMercadoPagoAsync(It.IsAny<Pedido>(), It.IsAny<CancellationToken>()), Times.Never);
         _pagamentoGateway.Verify(p => p.AdicionarPagamentoAsync(It.IsAny<Pagamento>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -67,7 +67,7 @@ public class GeraQrCodePagamentoUseCaseTests : TestBase
         var pedidoRecarregado = new Pedido { Id = idPedido };
 
         _pedidoGateway
-            .Setup(p => p.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false))
+            .Setup(p => p.ObterPedidoAsync(idPedido, It.IsAny<CancellationToken>()))
             .ReturnsAsync(pedidoInicial);
 
         _pagamentoGateway
@@ -83,13 +83,13 @@ public class GeraQrCodePagamentoUseCaseTests : TestBase
             .Returns(Task.CompletedTask);
 
         _pedidoGateway
-            .SetupSequence(p => p.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false))
+            .SetupSequence(p => p.ObterPedidoAsync(idPedido, It.IsAny<CancellationToken>()))
             .ReturnsAsync(pedidoInicial)
             .ReturnsAsync(pedidoRecarregado);
         var result = await _useCase.ExecutarAsync(idPedido, CancellationToken.None);
         Assert.Same(pedidoRecarregado, result);
 
-        _pedidoGateway.Verify(p => p.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false), Times.Exactly(2));
+        _pedidoGateway.Verify(p => p.ObterPedidoAsync(idPedido, It.IsAny<CancellationToken>()), Times.Exactly(2));
         _pagamentoGateway.Verify(p => p.CadastrarPedidoMercadoPagoAsync(pedidoInicial, It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWork.Verify(u => u.BeginTransaction(), Times.Once);
         _pagamentoGateway.Verify(p => p.AdicionarPagamentoAsync(pagamentoGerado, It.IsAny<CancellationToken>()), Times.Once);
@@ -103,7 +103,7 @@ public class GeraQrCodePagamentoUseCaseTests : TestBase
         var pedido = new Pedido { Id = idPedido };
 
         _pedidoGateway
-            .Setup(p => p.ObterPedidoComRelacionamentosAsync(idPedido, It.IsAny<CancellationToken>(), false))
+            .Setup(p => p.ObterPedidoAsync(idPedido, It.IsAny<CancellationToken>()))
             .ReturnsAsync(pedido);
 
         _pagamentoGateway

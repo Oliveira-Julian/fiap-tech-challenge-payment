@@ -18,6 +18,7 @@ public sealed class OrdersSettings
 
     public class OrdersPaths
     {
-        public string AtualizarPedidoPagamento { get; set; }
+        public string ObterPedido { get; set; }
+        public string ConfirmarPagamento { get; set; }
     }
 }

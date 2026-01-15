@@ -4,5 +4,6 @@ namespace FoodChallenge.Infrastructure.Clients.Orders.Clients;
 
 public interface IOrdersClient
 {
-    Task<Resposta<PedidoResponse>> AtualizarPedidoPagamentoAsync(AtualizarPedidoPagamentoRequest request, CancellationToken cancellationToken);
+    Task<Resposta<PedidoResponse>> ObterPedidoAsync(Guid idPedido, CancellationToken cancellationToken);
+    Task<Resposta> ConfirmarPagamentoAsync(Guid idPedido, CancellationToken cancellationToken);
 }

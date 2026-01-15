@@ -1,7 +1,10 @@
 ﻿using FoodChallenge.Common.Interfaces;
 using FoodChallenge.Common.Validators;
 using FoodChallenge.Payment.Application.Pagamentos.Interfaces;
+using FoodChallenge.Payment.Application.Pagamentos.Specifications;
+using FoodChallenge.Payment.Application.Pedidos;
 using FoodChallenge.Payment.Domain.Constants;
+using FoodChallenge.Payment.Domain.Enums;
 using FoodChallenge.Payment.Domain.Globalization;
 using FoodChallenge.Payment.Domain.Pagamentos;
 
@@ -12,7 +15,8 @@ namespace FoodChallenge.Payment.Application.Pagamentos.UseCases;
 public sealed class ConfirmaPagamentoMercadoPagoUseCase(
     ValidationContext validationContext,
     IUnitOfWork unitOfWork,
-    IPagamentoGateway pagamentoGateway) : IConfirmaPagamentoMercadoPagoUseCase
+    IPagamentoGateway pagamentoGateway,
+    IPedidoGateway pedidoGateway) : IConfirmaPagamentoMercadoPagoUseCase
 {
     private readonly ILogger logger = Log.ForContext<ConfirmaPagamentoMercadoPagoUseCase>();
 
@@ -43,38 +47,28 @@ public sealed class ConfirmaPagamentoMercadoPagoUseCase(
                 return default;
             }
 
-            // var pedido = await pedidoGateway.ObterPedidoComRelacionamentosAsync(pagamento.IdPedido.Value, cancellationToken);
-            // if (pedido is null)
-            // {
-            //     validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pedido)));
-            //     return default;
-            // }
+            var pedido = await pedidoGateway.ObterPedidoAsync(pagamento.IdPedido.Value, cancellationToken);
+            if (pedido is null)
+            {
+                validationContext.AddValidation(string.Format(Textos.NaoEncontrado, nameof(Pagamento)));
+                return default;
+            }
 
-            // validationContext.AddValidations(pedido, new PedidoPagamentoSpecification());
+            validationContext.AddValidations(pedido, new PedidoPagamentoSpecification());
 
-            // if (validationContext.HasValidations)
-            //     return default;
+            if (validationContext.HasValidations)
+                return default;
 
+            unitOfWork.BeginTransaction();
             pagamento.AtualizarStatus(notificacaoMercadoPago.Status);
             pagamentoGateway.AtualizarPagamento(pagamento);
+            await unitOfWork.CommitAsync();
 
-            
-            
-            
-            //TODO -  Migrar para o MS Order, criar um endpoint para atualizar o status do pedido e criar a ordem do pedido, 
-            // o MS Payment não deve ter essa responsabilidade e deve chamar a api do MS Order para essas atualizações 
-            
-            // if (notificacaoMercadoPago.Status != PagamentoStatus.Aprovado)
-            //     return pedido;
+            if (notificacaoMercadoPago.Status != PagamentoStatus.Aprovado)
+                return pagamento;
 
-            // pedido.AtualizarStatusPago();
+            await pedidoGateway.ConfirmarPagamentoAsync(pedido.Id.Value, cancellationToken);
 
-            // pedidoGateway.AtualizarPedido(pedido);
-
-            // var ordemPedido = new OrdemPedido();
-            // ordemPedido.Cadastrar(pedido.Id.Value);
-            // await ordemPedidoGateway.CadastrarOrdemPedidoAsync(ordemPedido, cancellationToken);
-            
             logger.Information(Logs.FimExecucaoServico, nameof(ConfirmaPagamentoMercadoPagoUseCase), nameof(ExecutarAsync), pagamento);
 
             return pagamento;

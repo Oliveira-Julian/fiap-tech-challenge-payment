@@ -15,18 +15,20 @@ internal sealed class OrdersClient(
         OrdersSettings ordersSettings,
         IAuthenticationClient authenticationClient) : IOrdersClient
 {
-    public async Task<Resposta<PedidoResponse>> AtualizarPedidoPagamentoAsync(AtualizarPedidoPagamentoRequest request, CancellationToken cancellationToken)
+    public async Task<Resposta<PedidoResponse>> ObterPedidoAsync(Guid idPedido, CancellationToken cancellationToken)
     {
-        logger.LogDebug(Logs.InicioExecucao, ordersSettings.Paths.AtualizarPedidoPagamento);
+        var url = string.Format(ordersSettings.Paths.ObterPedido, idPedido);
 
         try
         {
+            logger.LogDebug(Logs.InicioExecucao, url);
+
             if (!await AdicionarAutorizacaoAsync(cancellationToken))
                 return default;
 
-            var response = await httpClient.PostAsJsonAsync(ordersSettings.Paths.AtualizarPedidoPagamento, request, cancellationToken);
+            var response = await httpClient.PostAsync(url, null, cancellationToken);
 
-            logger.LogDebug(Logs.FimExecucao, ordersSettings.Paths.AtualizarPedidoPagamento, response);
+            logger.LogDebug(Logs.FimExecucao, url, response);
 
             return await response.MapearResponseAsync<Resposta<PedidoResponse>>(
                 addValidationAsync: (codigo, mensagem) =>
@@ -43,7 +45,7 @@ internal sealed class OrdersClient(
                 {
                     logger.LogError(
                         Logs.ErroResponse,
-                        ordersSettings.Paths.AtualizarPedidoPagamento,
+                        ordersSettings.Paths.ConfirmarPagamento,
                         (int)response.StatusCode,
                         mensagem
                     );
@@ -54,7 +56,54 @@ internal sealed class OrdersClient(
         }
         catch (Exception ex) when (ex is TimeoutException || ex.InnerException is TimeoutException)
         {
-            logger.LogError(ex, Logs.ErroGenerico, ordersSettings.Paths.AtualizarPedidoPagamento);
+            logger.LogError(ex, Logs.ErroGenerico, url);
+
+            return default;
+        }
+    }
+
+    public async Task<Resposta> ConfirmarPagamentoAsync(Guid idPedido, CancellationToken cancellationToken)
+    {
+        var url = string.Format(ordersSettings.Paths.ConfirmarPagamento, idPedido);
+
+        try
+        {
+            logger.LogDebug(Logs.InicioExecucao, url);
+
+            if (!await AdicionarAutorizacaoAsync(cancellationToken))
+                return default;
+
+            var response = await httpClient.PostAsync(url, null, cancellationToken);
+
+            logger.LogDebug(Logs.FimExecucao, url, response);
+
+            return await response.MapearResponseAsync<Resposta>(
+                addValidationAsync: (codigo, mensagem) =>
+                {
+                    logger.LogWarning(
+                        Logs.ErroResponse,
+                        ordersSettings.AuthUrl,
+                        (int)response.StatusCode,
+                        mensagem
+                    );
+                    return Task.CompletedTask;
+                },
+                error: mensagem =>
+                {
+                    logger.LogError(
+                        Logs.ErroResponse,
+                        url,
+                        (int)response.StatusCode,
+                        mensagem
+                    );
+                },
+                onUnauthorized: () => memoryCache.Remove(CacheAutorizacaoToken.TokenAutorizacao),
+                cancellationToken: cancellationToken
+            );
+        }
+        catch (Exception ex) when (ex is TimeoutException || ex.InnerException is TimeoutException)
+        {
+            logger.LogError(ex, Logs.ErroGenerico, url);
 
             return default;
         }
