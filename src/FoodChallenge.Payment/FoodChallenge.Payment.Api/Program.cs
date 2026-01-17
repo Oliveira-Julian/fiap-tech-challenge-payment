@@ -6,6 +6,7 @@ using FoodChallenge.Common.Validators;
 using FoodChallenge.Infrastructure.Clients.MercadoPago;
 using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Clientes.Interfaces;
 using FoodChallenge.Ioc;
+using FoodChallenge.Infrastructure.Clients.Orders;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -25,6 +26,7 @@ builder.Services.AddControllersDependency();
 builder.Services.AddRepositoryDependency();
 
 BootstrapMercadoPago.Configure(builder.Services, configuration);
+BootstrapOrders.Configure(builder.Services, configuration);
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers(options =>
