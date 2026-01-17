@@ -12,12 +12,6 @@ using FoodChallenge.Payment.Ioc;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-// Configure Kestrel to listen on the correct port for Docker
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ListenAnyIP(5002);
-});
-
 BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
 var mongoConnectionString = configuration.GetSection("MongoDb:ConnectionString").Value ?? string.Empty;

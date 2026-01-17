@@ -7,11 +7,11 @@ public static class AuthorizationPolicies
 
 public static class AuthorizationScopes
 {
-    public const string PaymentsRead = "Payments.read";
-    public const string PaymentsWrite = "Payments.write";
+    public const string PaymentsRead = "payments.read";
+    public const string PaymentsWrite = "payments.write";
 }
 
 public static class Audiences
 {
-    public const string PaymentsApi = "Payments-api";
+    public const string PaymentsApi = "payments-api";
 }
