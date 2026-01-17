@@ -35,7 +35,7 @@ internal sealed class OrdersClient(
                 {
                     logger.LogWarning(
                         Logs.ErroResponse,
-                        ordersSettings.AuthUrl,
+                        url,
                         (int)response.StatusCode,
                         mensagem
                     );
@@ -45,7 +45,7 @@ internal sealed class OrdersClient(
                 {
                     logger.LogError(
                         Logs.ErroResponse,
-                        ordersSettings.Paths.ConfirmarPagamento,
+                        url,
                         (int)response.StatusCode,
                         mensagem
                     );
@@ -82,7 +82,7 @@ internal sealed class OrdersClient(
                 {
                     logger.LogWarning(
                         Logs.ErroResponse,
-                        ordersSettings.AuthUrl,
+                        url,
                         (int)response.StatusCode,
                         mensagem
                     );
