@@ -14,6 +14,7 @@ public sealed class OrdersSettings
     public int Timeout { get; set; }
     public string ClientId { get; set; }
     public string ClientSecret { get; set; }
+    public string Scope { get; set; }
     public OrdersPaths Paths { get; set; }
 
     public class OrdersPaths

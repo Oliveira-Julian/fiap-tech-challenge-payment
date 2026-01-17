@@ -58,7 +58,8 @@ public class AuthenticationClient(
         {
             { "grant_type", "client_credentials" },
             { "client_id", ordersSettings.ClientId },
-            { "client_secret", ordersSettings.ClientSecret }
+            { "client_secret", ordersSettings.ClientSecret },
+            { "scope", ordersSettings.Scope }
         });
 
         return new HttpRequestMessage
