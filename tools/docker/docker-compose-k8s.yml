@@ -3,7 +3,7 @@ services:
     image: julianoliveira/foodchallenge-payment-api
     container_name: foodchallenge_payment_api
     build:
-      context: ../../src/FoodChallenge.payment
+      context: ../../src/FoodChallenge.Payment
       dockerfile: ../../tools/docker/build/dotnet.web-api.Dockerfile
       target: final
     environment:
