@@ -2,12 +2,14 @@ using FoodChallenge.Payment.Adapter.Controllers;
 using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
 using FoodChallenge.Payment.Application.Pagamentos.Models.Responses;
 using FoodChallenge.Payment.Domain.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodChallenge.Payment.Api.Controllers;
 
 [ApiController]
 [Route("[Controller]")]
+[Authorize(Policy = AuthorizationPolicies.PaymentsApi)]
 public class PagamentoController(
     ILogger<PagamentoController> logger,
     PagamentoAppController pagamentoAppController) : ControllerBase

@@ -7,6 +7,7 @@ using FoodChallenge.Infrastructure.Clients.MercadoPago;
 using FoodChallenge.Infrastructure.Data.Mongo.Repositories.Clientes.Interfaces;
 using FoodChallenge.Ioc;
 using FoodChallenge.Infrastructure.Clients.Orders;
+using FoodChallenge.Payment.Ioc;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -14,7 +15,7 @@ var configuration = builder.Configuration;
 // Configure Kestrel to listen on the correct port for Docker
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.ListenAnyIP(5002); // Listen on port 5002 on any IP
+    serverOptions.ListenAnyIP(5002);
 });
 
 BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
@@ -24,6 +25,7 @@ var mongoDatabaseName = configuration.GetSection("MongoDb:DatabaseName").Value ?
 builder.Services.AddMongoDbDependency(mongoConnectionString, mongoDatabaseName);
 builder.Services.AddControllersDependency();
 builder.Services.AddRepositoryDependency();
+builder.Services.AddOpenIdDictValidation(configuration);
 
 BootstrapMercadoPago.Configure(builder.Services, configuration);
 BootstrapOrders.Configure(builder.Services, configuration);

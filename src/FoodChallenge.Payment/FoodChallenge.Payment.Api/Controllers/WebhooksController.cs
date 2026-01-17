@@ -2,12 +2,14 @@ using FoodChallenge.Common.Entities;
 using FoodChallenge.Payment.Adapter.Controllers;
 using FoodChallenge.Payment.Application.Pagamentos.Models.Requests;
 using FoodChallenge.Payment.Domain.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodChallenge.Payment.Api.Controllers;
 
 [ApiController]
 [Route("[Controller]")]
+[Authorize(Policy = AuthorizationPolicies.PaymentsApi)]
 public class WebhooksController(
     PagamentoAppController pagamentoAppController,
     ILogger<WebhooksController> logger) : ControllerBase
@@ -15,7 +17,7 @@ public class WebhooksController(
     /// <summary>
     /// Relizar pagamento do Pedido.
     /// </summary>
-    /// <param name="request">Informações do webhook disparado pelo Mercado Pago.</param>
+    /// <param name="request">Informaï¿½ï¿½es do webhook disparado pelo Mercado Pago.</param>
     /// <param name="cancellationToken">Token de cancelamento</param>
     [HttpPost("mercadoPago/pagamento")]
     [ProducesResponseType(typeof(Resposta), StatusCodes.Status200OK)]
